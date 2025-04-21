@@ -7,8 +7,8 @@ from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.vectorstores import Chroma
 
 # --- Configuration ---
-DATA_PATH = "../data"
-PERSIST_DIRECTORY = "../vector_store"
+DATA_PATH = "data"
+PERSIST_DIRECTORY = "vector_store"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 150

@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+sentence-transformers
+chromadb-client # Or just chromadb if using the full library
+pydantic # Usually installed with fastapi
+# Add langchain-community if you used its SentenceTransformerEmbeddings wrapper
+langchain-community
