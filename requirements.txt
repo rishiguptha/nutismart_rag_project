@@ -1,0 +1,6 @@
+langchain
+langchain-community
+sentence-transformers
+chromadb
+pypdf # For reading PDFs via Langchain
+python-dotenv # If you plan to use a .env file for config
