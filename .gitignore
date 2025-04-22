@@ -1,1 +1,20 @@
-vector_store
+# Python stuff
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*build*/
+*dist*/
+*pip-wheel-metadata*/
+*.egg-info/
+*.venv/
+venv/
+*.env
+
+# Vector Store Data (IMPORTANT!)
+vector_store/
+
+# OS / IDE specific
+.DS_Store
+.idea/
+.vscode/
