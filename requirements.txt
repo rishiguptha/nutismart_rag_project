@@ -12,4 +12,7 @@ pypdf
 
 # Optional but useful
 ipykernel # For notebooks if you use them
-# requests
+
+
+# UI Framework
+streamlit #
