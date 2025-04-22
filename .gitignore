@@ -3,15 +3,15 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*build*/
-*dist*/
+/build/
+/dist/
 *pip-wheel-metadata*/
 *.egg-info/
-*.venv/
 venv/
 *.env
-
-# Vector Store Data (IMPORTANT!)
+.env
+# Vector Store Data (IMPORTANT!): This directory contains embeddings or indexes used for efficient similarity searches, 
+# which are critical for the application's functionality. Exclude it to avoid committing large or sensitive data.
 vector_store/
 
 # OS / IDE specific
