@@ -1,7 +1,11 @@
+# In retrieval_service/requirements.txt
 fastapi
 uvicorn[standard]
 sentence-transformers
-chromadb-client # Or just chromadb if using the full library
-pydantic # Usually installed with fastapi
-# Add langchain-community if you used its SentenceTransformerEmbeddings wrapper
-langchain-community
+chromadb==0.4.24 # <--- Pin version (MATCHES root)
+duckdb>=0.9.2,<0.10.0 # Pin duckdb too
+duckdb-engine
+pyarrow
+pydantic
+langchain-community # If used
+numpy<2.0

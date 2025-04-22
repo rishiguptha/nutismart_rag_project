@@ -1,7 +1,12 @@
+# In root requirements.txt
 langchain
 langchain-community
 sentence-transformers
-chromadb
-pypdf # For reading PDFs via Langchain
-python-dotenv # If you plan to use a .env file for config
-
+chromadb==0.4.24 # <--- Pin version
+duckdb>=0.9.2,<0.10.0 # Pin duckdb too for safety
+duckdb-engine
+pyarrow
+pypdf
+python-dotenv
+requests
+numpy<2.0
