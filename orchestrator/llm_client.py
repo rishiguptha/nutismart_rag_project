@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 model = None
 # Consider making MODEL_NAME configurable via .env too
-MODEL_NAME = os.environ.get("GENERATIVE_MODEL_NAME", "gemini-1.5-flash-latest")
+MODEL_NAME = os.environ.get("GENERATIVE_MODEL_NAME", "gemini-2.0-flash")
 
 # --- Configure the Google AI Client ---
 try:

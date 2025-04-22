@@ -2,17 +2,14 @@
 langchain
 langchain-community
 sentence-transformers
-chromadb==0.4.24 # Pinned version
-duckdb>=0.9.2,<0.10.0 # Pinned version
-duckdb-engine
-pyarrow
-numpy<2.0 # Pinned version
+faiss-cpu  # <--- Using FAISS (CPU version) instead of ChromaDB
 python-dotenv # For .env file
 google-generativeai # Or the client for your chosen LLM API
+# numpy # Try without pinning first
 
 # Document Loading
 pypdf
 
 # Optional but useful
 ipykernel # For notebooks if you use them
-# requests # If you need to make other HTTP calls (not needed for local retrieval)
+# requests
