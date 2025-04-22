@@ -1,41 +1,67 @@
+# In orchestrator/prompt_templates.py
+
 import logging
+import re # For extracting the final answer later
 from typing import List
 
 logger = logging.getLogger(__name__)
 
-def format_rag_prompt(query: str, context_chunks: List[str]) -> str:
-    """Formats the prompt for the LLM with retrieved context."""
+def format_react_style_rag_prompt(query: str, context_chunks: List[str]) -> str:
+    """Formats a ReAct-style prompt for the LLM with retrieved context."""
 
     if not context_chunks:
-        logger.warning("No context chunks provided for prompt formatting.")
-        # If no context, we might ask the LLM to answer from its general knowledge,
-        # or state that info wasn't found. Let's explicitly state it wasn't found.
+        logger.warning("No context chunks provided for ReAct prompt formatting.")
         context_str = "No relevant context found in the documents."
-        # You could modify the instruction below if context_str == "No relevant context found."
     else:
-        # Join chunks with a clear separator
-        context_str = "\n\n---\n\n".join(context_chunks)
+        # Format context clearly, maybe numbering chunks
+        context_str = "\n\n---\n\n".join(f"Context Chunk {i+1}:\n{chunk}" for i, chunk in enumerate(context_chunks))
 
-    # Prompt Engineering: Clearly instruct the LLM
-    prompt = f"""**Instruction:** You are a helpful assistant specialized in Nutrition and Fitness. Based on the following context items, please answer the query.
-    Give yourself room to think by extracting relevant passages from the context before answering the query.
-    Don't return the thinking, only return the answer.
-    Make sure your answers are as explanatory as possible.
-    Use the following examples as reference for the ideal answer style.
-    \nExample 1:
-    Query: What are the fat-soluble vitamins?
-    Answer: The fat-soluble vitamins include Vitamin A, Vitamin D, Vitamin E, and Vitamin K. These vitamins are absorbed along with fats in the diet and can be stored in the body's fatty tissue and liver for later use. Vitamin A is important for vision, immune function, and skin health. Vitamin D plays a critical role in calcium absorption and bone health. Vitamin E acts as an antioxidant, protecting cells from damage. Vitamin K is essential for blood clotting and bone metabolism.
-    \nExample 2:
-    Query: What are the causes of type 2 diabetes?
-    Answer: Type 2 diabetes is often associated with overnutrition, particularly the overconsumption of calories leading to obesity. Factors include a diet high in refined sugars and saturated fats, which can lead to insulin resistance, a condition where the body's cells do not respond effectively to insulin. Over time, the pancreas cannot produce enough insulin to manage blood sugar levels, resulting in type 2 diabetes. Additionally, excessive caloric intake without sufficient physical activity exacerbates the risk by promoting weight gain and fat accumulation, particularly around the abdomen, further contributing to insulin resistance.
-    \nExample 3:
-    Query: What is the importance of hydration for physical performance?
-    Answer: Hydration is crucial for physical performance because water plays key roles in maintaining blood volume, regulating body temperature, and ensuring the transport of nutrients and oxygen to cells. Adequate hydration is essential for optimal muscle function, endurance, and recovery. Dehydration can lead to decreased performance, fatigue, and increased risk of heat-related illnesses, such as heat stroke. Drinking sufficient water before, during, and after exercise helps ensure peak physical performance and recovery.
-    \nNow use the following context items to answer the user query:
-    {context_str}
-    \nRelevant passages: <extract relevant passages from the context here>
-    User query: {query}
-    Answer:"""
+    # ReAct-style Prompt Structure (Simulated Reasoning + Action = Final Answer)
+    prompt = f"""**Instruction:** You are an AI assistant specialized in Nutrition and Fitness. Your task is to answer the user's query accurately based *only* on the provided context chunks. Follow these steps carefully:
 
-    logger.info(f"Formatted prompt using {len(context_chunks)} context chunks for query: '{query[:50]}...'")
+1.  **Thought:** First, analyze the user's query (`{query}`). Read through the provided context chunks. Identify and explicitly list the key sentences or passages from the context chunks that are directly relevant to answering the query. Analyze how these relevant passages connect to form the answer. Determine if the combined information is sufficient. *Do not add any external knowledge or assumptions.* If the context does not contain the necessary information, state that clearly in this thought process.
+
+2.  **Final Answer:** Based *only* on the analysis in your Thought step, construct a comprehensive and explanatory answer to the original query. If your thought process concluded that the information is not available in the context, the final answer should *only* be: "Based on the provided documents, I cannot answer this question."
+
+**Example Answer Style Guidance (Do NOT use content from examples to answer the current query):**
+* *For "What are fat-soluble vitamins?":* Answer should list Vitamin A, D, E, K and briefly explain their function and storage based *only* on context provided for *that* query.
+* *For "Causes of type 2 diabetes?":* Answer should explain the link to overnutrition, insulin resistance etc., based *only* on context provided for *that* query.
+* *For "Importance of hydration?":* Answer should explain roles in temperature regulation, nutrient transport, performance impact based *only* on context provided for *that* query.
+
+---
+**BEGIN TASK**
+
+**Provided Context:**
+---
+{context_str}
+---
+
+**User Query:** {query}
+
+---
+**Output:**
+
+**Thought:**
+""" # <<< LLM STARTS GENERATING THOUGHT PROCESS HERE
+
+    logger.info(f"Formatted ReAct-style prompt using {len(context_chunks)} context chunks for query: '{query[:50]}...'")
     return prompt
+
+def extract_final_answer(llm_output: str) -> str:
+    """Extracts the Final Answer part from the LLM's ReAct-style output."""
+    # Use regex to find the 'Final Answer:' section, ignoring case and leading/trailing whitespace
+    # It captures everything after 'Final Answer:' until the end of the string
+    match = re.search(r"\*\*Final Answer\*\*:?\s*(.*)", llm_output, re.IGNORECASE | re.DOTALL)
+    if match:
+        final_answer = match.group(1).strip()
+        logger.debug(f"Extracted Final Answer: '{final_answer[:100]}...'")
+        return final_answer
+    else:
+        # Fallback if the LLM didn't follow the format perfectly
+        logger.warning("Could not find 'Final Answer:' section in LLM output. Returning full output as fallback.")
+        # You might want to remove the "Thought:" part even in fallback
+        thought_match = re.search(r"\*\*Thought\*\*:?\s*(.*)", llm_output, re.IGNORECASE | re.DOTALL)
+        if thought_match:
+             # Return everything after the thought section if final answer marker missing
+             return llm_output[thought_match.end():].strip()
+        return llm_output # Return everything if neither marker found clearly

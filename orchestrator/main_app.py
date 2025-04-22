@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS # <--- Import FAISS
 
 # Import functions from other orchestrator files
 from .llm_client import get_llm_response
-from .prompt_templates import format_rag_prompt
+from .prompt_templates import format_react_style_rag_prompt, extract_final_answer # Import NEW functions
 
 # --- Load Environment Variables ---
 load_dotenv()
@@ -18,7 +18,7 @@ load_dotenv()
 FAISS_INDEX_PATH = os.path.join(os.path.dirname(__file__), '..', 'vector_store/faiss_index')
 FAISS_INDEX_NAME = "nutrition_fitness_index" # Must match index_data.py
 EMBEDDING_MODEL_NAME = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-DEFAULT_TOP_K = 3
+DEFAULT_TOP_K = 7
 
 # Setup logging configuration
 logging.basicConfig(
@@ -97,14 +97,21 @@ def query_rag(user_query: str, top_k: int = DEFAULT_TOP_K):
     context_chunks = retrieve_context_local(user_query, k=top_k)
     logger.info(f"Retrieved {len(context_chunks)} context chunks locally.")
 
-    prompt = format_rag_prompt(user_query, context_chunks)
+    prompt = format_react_style_rag_prompt(user_query, context_chunks) # Call NEW function
 
+    # 3. Call External LLM
     logger.info("Sending prompt to external LLM...")
-    final_answer = get_llm_response(prompt)
+    raw_llm_response = get_llm_response(prompt) # Get the full output including Thought
 
-    if final_answer is None:
+    if raw_llm_response is None:
+        # Error logged within get_llm_response
         return "Sorry, encountered an error getting the response from the language model. Please check logs."
-    return final_answer
+
+    # 4. Extract Final Answer from LLM's full output
+    final_answer = extract_final_answer(raw_llm_response) # Add this extraction step
+
+    # 5. Return Result
+    return final_answer # Return the extracted answer
 
 # --- Main Execution Block (Unchanged) ---
 if __name__ == "__main__":
