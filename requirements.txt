@@ -10,3 +10,15 @@ pypdf
 python-dotenv
 requests
 numpy<2.0
+
+# In retrieval_service/requirements.txt
+fastapi
+uvicorn[standard]
+sentence-transformers
+chromadb==0.4.24 # <--- Pin version (MATCHES root)
+duckdb>=0.9.2,<0.10.0 # Pin duckdb too
+duckdb-engine
+pyarrow
+pydantic
+langchain-community # If used
+numpy<2.0
