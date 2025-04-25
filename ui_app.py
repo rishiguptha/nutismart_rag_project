@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 # --- Page Configuration ---
 st.set_page_config(
-    page_title="NutiSmart RAG Assistant", # Renamed
+    page_title="NutriSmart: RAG-Driven Insights for Fitness and Nutrition", # Renamed
     page_icon="🍎",
     layout="wide" # Use wide layout for more space
 )
