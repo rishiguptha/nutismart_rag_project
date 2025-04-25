@@ -1,8 +1,8 @@
 # Core RAG & Orchestration Dependencies
 langchain
 langchain-community
-sentence-transformers # Includes Bi-Encoders and Cross-Encoders
-torch # Explicitly add torch (dependency of sentence-transformers)
+sentence-transformers
+torch
 faiss-cpu
 python-dotenv
 google-generativeai
@@ -10,15 +10,20 @@ google-generativeai
 
 # Document Loading
 pypdf
+beautifulsoup4 # <--- Add for WebBaseLoader
+html2text      # <--- Add for WebBaseLoader
 
 # UI Framework
 streamlit
 
 # Optional but useful
 ipykernel
+
 # For Google Search
 googlesearch-python
+
 # For Wikipedia
 wikipedia-api
+
 # For Google Search
 googlesearch-python
