@@ -1,0 +1,33 @@
+[
+    {
+      "id": "Q1",
+      "query": "What are the main recommendations for aerobic physical activity for adults according to the WHO guidelines?",
+      "ideal_answer": "Adults should do at least 150–300 minutes of moderate-intensity aerobic physical activity, or at least 75–150 minutes of vigorous-intensity aerobic physical activity, or an equivalent combination throughout the week. Engaging in muscle-strengthening activities involving major muscle groups on 2 or more days a week provides additional health benefits. (Verify exact wording and source/page in your docs)"
+    },
+    {
+      "id": "Q2",
+      "query": "What are some specific examples of moderate-intensity aerobic activities mentioned in the documents?",
+      "ideal_answer": "Examples mentioned might include brisk walking, water aerobics, dancing, gardening, or cycling at a moderate pace. (Verify exact examples and source/page in your docs)"
+    },
+    {
+      "id": "Q3",
+      "query": "What is the function of carbohydrates in the body?",
+      "ideal_answer": "Carbohydrates are the primary source of energy for the body, particularly for the brain and during high-intensity exercise. They are broken down into glucose, which cells use for fuel. (Verify exact wording and source/page in your docs)"
+    },
+    {
+      "id": "Q4",
+      "query": "How is body composition typically assessed?",
+      "ideal_answer": "Methods mentioned might include BMI (though limited), skinfold measurements, bioelectrical impedance analysis (BIA), underwater weighing (hydrodensitometry), or DEXA scans. (Verify exact methods and source/page in your docs)"
+    },
+    {
+        "id": "Q5",
+        "query": "Explain the concept of SMART goals for fitness.",
+        "ideal_answer": "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound. This framework helps create clear and trackable objectives for fitness plans. (Verify exact wording and source/page in your docs)"
+    },
+    {
+        "id": "Q6_OOS",
+        "query": "What is the capital of France?",
+        "ideal_answer": "Based on the provided documents, I cannot answer this question."
+    }
+  ]
+  
