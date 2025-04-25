@@ -1,18 +1,24 @@
 # Core RAG & Orchestration Dependencies
 langchain
 langchain-community
-sentence-transformers
-faiss-cpu  # <--- Using FAISS (CPU version) instead of ChromaDB
-python-dotenv # For .env file
-google-generativeai # Or the client for your chosen LLM API
-# numpy # Try without pinning first
+sentence-transformers # Includes Bi-Encoders and Cross-Encoders
+torch # Explicitly add torch (dependency of sentence-transformers)
+faiss-cpu
+python-dotenv
+google-generativeai
+# numpy<2.0 # Keep commented unless needed after testing
 
 # Document Loading
 pypdf
 
-# Optional but useful
-ipykernel # For notebooks if you use them
-
-
 # UI Framework
-streamlit #
+streamlit
+
+# Optional but useful
+ipykernel
+# For Google Search
+googlesearch-python
+# For Wikipedia
+wikipedia-api
+# For Google Search
+googlesearch-python

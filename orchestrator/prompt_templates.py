@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 
-# --- SIMPLIFIED ReAct-style Prompt ---
+# --- format_react_style_rag_prompt function remains the same ---
 def format_react_style_rag_prompt(
     query: str,
     context_docs: List[Document],
@@ -17,7 +17,6 @@ def format_react_style_rag_prompt(
     Formats a simpler ReAct-style prompt for the LLM with retrieved context,
     chat history, and citation instructions. Asks for reasoning first, then the answer.
     """
-
     # --- Format Chat History ---
     history_str = ""
     if chat_history:
@@ -73,28 +72,59 @@ def format_react_style_rag_prompt(
     logger.info(f"Formatted Simplified ReAct prompt using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
     return prompt
 
-# --- MODIFIED Extraction Function ---
+
+# --- EVEN MORE ROBUST Extraction Function ---
 def extract_final_answer(llm_output: str) -> str:
     """
     Extracts the Answer part from the LLM's simplified ReAct-style output.
-    Looks for the section starting with 'Answer:' after 'Reasoning:'.
+    Prioritizes finding '**Answer:**' after '**Reasoning:**'.
+    Includes fallbacks for missing markers or variations.
     """
-    # Find the start of the 'Answer:' section, making sure it comes *after* 'Reasoning:'
-    reasoning_match = re.search(r"\*\*Reasoning\*\*:?", llm_output, re.IGNORECASE | re.DOTALL)
-    if not reasoning_match:
-        logger.warning("Could not find 'Reasoning:' section. Returning full output as fallback.")
-        return llm_output # Can't find reasoning, return everything
+    if not llm_output:
+        logger.warning("Received empty LLM output for extraction.")
+        return ""
 
-    # Search for 'Answer:' *after* the reasoning section ends
-    answer_match = re.search(r"\*\*Answer\*\*:?\s*(.*)", llm_output[reasoning_match.end():], re.IGNORECASE | re.DOTALL)
+    # Normalize potential markdown variations and whitespace around markers
+    # Look for variations like **Answer:**, **Answer**: , **Answer** : etc.
+    answer_marker_pattern = r"\*\*[Aa]nswer\*\*\s*:?\s*" # Case-insensitive, optional colon, optional space
+    reasoning_marker_pattern = r"\*\*[Rr]easoning\*\*\s*:?\s*" # Case-insensitive, optional colon, optional space
+
+    # Try to find the reasoning marker first
+    reasoning_match = re.search(reasoning_marker_pattern, llm_output)
+    search_start_index = 0
+    if reasoning_match:
+        search_start_index = reasoning_match.end()
+        logger.debug("Found 'Reasoning:' marker.")
+    else:
+        logger.warning("Could not find 'Reasoning:' marker in LLM output.")
+        # If reasoning is missing, we search for Answer from the beginning
+
+    # Now search for the Answer marker *after* the reasoning section (or from start)
+    answer_match = re.search(answer_marker_pattern, llm_output[search_start_index:])
 
     if answer_match:
-        final_answer = answer_match.group(1).strip()
-        logger.debug(f"Extracted Answer: '{final_answer[:100]}...'")
+        # Calculate the actual start index in the original string and get the rest
+        answer_start_index = search_start_index + answer_match.end()
+        final_answer = llm_output[answer_start_index:].strip()
+        logger.info(f"Extracted Answer using marker (length: {len(final_answer)}).")
+        # Simple check to remove trailing Reasoning/Thought if LLM repeats it
+        if final_answer.endswith("**Reasoning:**") or final_answer.endswith("**Thought:**"):
+             final_answer = final_answer[:-len("**Reasoning:**")].strip()
         return final_answer
     else:
-        # Fallback if 'Answer:' marker is missing after 'Reasoning:'
-        logger.warning("Could not find 'Answer:' section after 'Reasoning:'. Returning content after 'Reasoning:' as fallback.")
-        # Return everything after the reasoning section
-        return llm_output[reasoning_match.end():].strip()
+        # Fallback 1: If 'Answer:' marker is missing, but 'Reasoning:' was found,
+        # assume the answer is everything after 'Reasoning:'.
+        if reasoning_match:
+            logger.warning("Could not find 'Answer:' marker after 'Reasoning:'. Returning content after 'Reasoning:' as fallback.")
+            potential_answer = llm_output[search_start_index:].strip()
+            if potential_answer:
+                return potential_answer
+            else:
+                 logger.warning("Content after 'Reasoning:' is empty.")
+                 # If reasoning was found but nothing follows, maybe the answer was just "I cannot answer" within reasoning?
+                 # Let's return the whole output in this ambiguous case for review.
+                 return llm_output
 
+        # Fallback 2: If neither marker was found clearly, return the whole output.
+        logger.error("Could not reliably extract final answer using markers. Returning full LLM output.")
+        return llm_output
