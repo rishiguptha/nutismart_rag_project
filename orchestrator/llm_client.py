@@ -4,10 +4,9 @@ import os
 import google.generativeai as genai
 import logging
 from dotenv import load_dotenv
-# --- ADD List and Dict to the import ---
 from typing import Generator, Optional, List, Dict
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -41,6 +40,7 @@ def stream_llm_response(prompt: str) -> Generator[str, None, None] | None:
             prompt, stream=True,
             generation_config=genai.types.GenerationConfig(temperature=0.7),
         )
+        # (Keep the rest of the streaming logic)
         for chunk in response_stream:
              if not chunk.parts:
                  if response_stream.prompt_feedback.block_reason:
@@ -86,18 +86,32 @@ def get_llm_response(prompt: str) -> str | None:
         logger.exception(f"Error calling Google AI API ({MODEL_NAME}): {e}", exc_info=True)
         return None
 
-# --- Query Transformation function (Unchanged logic, just needs the import fixed) ---
+# --- Query Transformation function (REMOVED IMPORT, ADDED PROMPT STRING) ---
 def transform_query_with_history(original_query: str, chat_history: List[Dict[str, str]]) -> str:
     """Uses the LLM to rewrite the query based on chat history."""
     if not chat_history:
         logger.info("No chat history provided, using original query for retrieval.")
         return original_query
 
-    # Import the formatter here to avoid circular dependency if placed at top level
-    # Ensure prompt_templates.py also imports List, Dict if needed
-    from orchestrator.prompt_templates import format_query_transform_prompt
+    # --- REMOVED INCORRECT IMPORT ---
+    # from orchestrator.prompt_templates import format_query_transform_prompt # <-- REMOVED
 
-    transform_prompt = format_query_transform_prompt(original_query, chat_history)
+    # --- DEFINE PROMPT STRING DIRECTLY ---
+    history_str = ""
+    for turn in chat_history:
+        role = turn.get("role", "unknown").capitalize()
+        content = turn.get("content", "")
+        content_preview = (content[:300] + '...') if len(content) > 300 else content
+        history_str += f"{role}: {content_preview}\n" # Use preview for transform prompt
+
+    transform_prompt = f"""Given the following chat history and the latest user query, rewrite the latest user query to be a standalone question that incorporates the necessary context from the history. Only output the rewritten query, nothing else.
+
+**Chat History:**
+{history_str}
+**Latest User Query:** {original_query}
+
+**Standalone Query:**"""
+    # --- END PROMPT STRING DEFINITION ---
 
     logger.info("Sending query transformation request to LLM...")
     if model is None:
@@ -128,3 +142,5 @@ def transform_query_with_history(original_query: str, chat_history: List[Dict[st
     except Exception as e:
         logger.exception(f"Error during query transformation LLM call: {e}", exc_info=True)
         return original_query # Fallback to original query on error
+
+# --- END OF FILE ---

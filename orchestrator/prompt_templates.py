@@ -7,16 +7,17 @@ from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 
-# --- format_rag_prompt function remains the same (Simplified version) ---
+# --- Prompt Function - Encouraging Synthesis ---
 def format_rag_prompt(
     query: str,
     context_docs: List[Document],
     chat_history: List[Dict[str, str]] = None
     ) -> str:
     """
-    Formats a direct prompt for the LLM with retrieved context,
-    chat history, and citation instructions. No explicit reasoning step requested.
+    Formats a direct prompt for the LLM, encouraging synthesis from context
+    and handling cases where direct examples might be definitions or pointers.
     """
+
     # --- Format Chat History ---
     history_str = ""
     if chat_history:
@@ -44,14 +45,15 @@ def format_rag_prompt(
             context_pieces.append(f"{header}\n{content_preview}")
         context_str = "\n\n---\n\n".join(context_pieces)
 
-    # --- Assemble Simplified Prompt ---
-    prompt = f"""{history_str}**Instruction:** You are an AI assistant specialized in Nutrition and Fitness. Answer the user's latest query based *only* on the provided context chunks. Consider the chat history for understanding the query if necessary.
+    # --- Assemble Prompt - Modified Instructions ---
+    prompt = f"""{history_str}**Instruction:** You are an AI assistant specialized in Nutrition and Fitness. Answer the user's latest query based *only* on the provided context chunks, considering the chat history for understanding the query.
 
--   Carefully read the provided context chunks below.
+-   Carefully read the provided context chunks. Synthesize the information to answer the query comprehensively.
+-   If the query asks for examples and the context provides definitions or classifications (like the talk test for intensity) instead of an explicit list, **use those definitions to describe the types of activities** that would fit.
 -   Construct a comprehensive and explanatory answer to the 'Latest User Query' using *only* information found in the context chunks.
 -   For *each* piece of information used from the context, cite the source document and page number in parentheses immediately after the information, like this: (Source: filename.pdf, Page X).
--   **If the context does not contain the information needed to answer the query (or if the context is marked 'CONTEXT_IS_MISSING'), state *only*: "Based on the provided documents, I cannot answer this question."**
--   Do not add any information not present in the context. Do not add introductory or concluding remarks not directly answering the query. Do not explain your reasoning process unless the query specifically asks for it.
+-   **If the context is truly insufficient to answer the query even using definitions or classifications (or if context is marked 'CONTEXT_IS_MISSING'), state *only*: "Based on the provided documents, I cannot answer this question."**
+-   Do not add any information not present in the context. Do not add introductory or concluding remarks.
 
 ---
 **BEGIN TASK**
@@ -64,41 +66,11 @@ def format_rag_prompt(
 **Latest User Query:** {query}
 
 ---
-**Answer:**"""
+**Answer:**""" # <<< LLM STARTS GENERATING ANSWER HERE
 
     log_query = query[:50].replace('\n', ' ')
-    logger.info(f"Formatted RAG prompt using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
-    return prompt
-
-
-# --- ADD NEW FUNCTION FOR QUERY TRANSFORMATION ---
-def format_query_transform_prompt(
-    query: str,
-    chat_history: List[Dict[str, str]]
-    ) -> str:
-    """Formats a prompt to ask the LLM to rewrite a query based on history."""
-
-    history_str = ""
-    if chat_history:
-        for turn in chat_history:
-            role = turn.get("role", "unknown").capitalize()
-            content = turn.get("content", "")
-            # Include slightly more history content for transformation context
-            content_preview = (content[:300] + '...') if len(content) > 300 else content
-            history_str += f"{role}: {content}\n"
-    else:
-        # If no history, the original query is likely standalone
-        return query # Return original query if no history
-
-    prompt = f"""Given the following chat history and the latest user query, rewrite the latest user query to be a standalone question that incorporates the necessary context from the history. Only output the rewritten query, nothing else.
-
-**Chat History:**
-{history_str}
-**Latest User Query:** {query}
-
-**Standalone Query:**"""
-    logger.debug("Formatted query transformation prompt.")
+    logger.info(f"Formatted Synthesis prompt using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
     return prompt
 
 # --- REMOVE extract_final_answer function ---
-# No longer needed with the simplified prompt
+# Not needed with this direct prompt structure.

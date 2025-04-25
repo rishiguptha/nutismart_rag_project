@@ -1,10 +1,12 @@
+# scripts/index_data.py
+
 import os
 import re
 import logging
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import SentenceTransformerEmbeddings
-from langchain_community.vectorstores import FAISS # <--- Import FAISS
+from langchain_community.vectorstores import FAISS
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,14 +14,16 @@ logger = logging.getLogger(__name__)
 
 # --- Configuration ---
 DATA_PATH = "data"
-# Define folder path for FAISS index files
 FAISS_INDEX_PATH = "vector_store/faiss_index"
-FAISS_INDEX_NAME = "nutrition_fitness_index" # Name for the index files (.faiss, .pkl)
+FAISS_INDEX_NAME = "nutrition_fitness_index"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 150
+# --- MODIFIED CHUNKING ---
+CHUNK_SIZE = 512 # Smaller chunk size
+CHUNK_OVERLAP = 75 # Adjusted overlap (around 15-20% of new chunk size)
+# --- END MODIFIED CHUNKING ---
 MIN_CHUNK_LENGTH = 50
 
+# (Keep clean_whitespace and is_potentially_irrelevant functions as they are)
 def clean_whitespace(text):
     """Removes leading/trailing whitespace and collapses internal whitespace."""
     text = text.strip()
@@ -40,8 +44,9 @@ def is_potentially_irrelevant(text, min_length=MIN_CHUNK_LENGTH):
         if re.search(pattern, lower_text): return True
     return False
 
+
 def main():
-    logger.info("Starting data indexing process for FAISS...")
+    logger.info("Starting data indexing process for FAISS (with updated chunking)...")
 
     # --- 1. Load Documents ---
     logger.info(f"Loading documents from: {DATA_PATH}")
@@ -56,16 +61,19 @@ def main():
         return
     logger.info(f"Loaded {len(documents)} document pages.")
 
-    # --- 2. Split Documents into Chunks ---
+    # --- 2. Split Documents into Chunks (Using new CHUNK_SIZE/OVERLAP) ---
     logger.info(f"Splitting documents into chunks (size: {CHUNK_SIZE}, overlap: {CHUNK_OVERLAP})...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP,
-        length_function=len, add_start_index=True,
+        chunk_size=CHUNK_SIZE, # Use updated value
+        chunk_overlap=CHUNK_OVERLAP, # Use updated value
+        length_function=len,
+        add_start_index=True,
     )
     docs_split = text_splitter.split_documents(documents)
     logger.info(f"Split into {len(docs_split)} initial chunks.")
 
     # --- 2.5 Clean and Filter Chunks ---
+    # (Cleaning/Filtering logic remains the same)
     logger.info("Cleaning and filtering chunks...")
     cleaned_docs = []
     filtered_count = 0
@@ -83,7 +91,9 @@ def main():
     logger.info(f"Filtered out {filtered_count} chunks.")
     logger.info(f"Retained {len(cleaned_docs)} chunks after cleaning and filtering.")
 
+
     # --- 3. Initialize Embedding Model ---
+    # (Remains the same)
     logger.info(f"Initializing embedding model: {EMBEDDING_MODEL_NAME}")
     try:
         embeddings = SentenceTransformerEmbeddings(
@@ -96,19 +106,17 @@ def main():
          return
 
     # --- 4. Create FAISS Index and Save ---
+    # (Remains the same)
     try:
         logger.info("Creating FAISS index from documents (this may take a while)...")
-        # Create index in memory first
         vector_db = FAISS.from_documents(cleaned_docs, embeddings)
         logger.info("FAISS index created in memory.")
 
-        # Ensure the target directory exists
         abs_index_path = os.path.abspath(FAISS_INDEX_PATH)
         logger.info(f"Ensuring directory exists: {abs_index_path}")
         os.makedirs(abs_index_path, exist_ok=True)
 
         logger.info(f"Saving FAISS index locally to: {abs_index_path} with index name: {FAISS_INDEX_NAME}")
-        # Save the index files to the specified folder
         vector_db.save_local(folder_path=abs_index_path, index_name=FAISS_INDEX_NAME)
 
         logger.info(f"FAISS index saved successfully. Index contains {vector_db.index.ntotal} vectors.")
