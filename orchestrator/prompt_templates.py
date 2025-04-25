@@ -7,15 +7,15 @@ from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 
-# --- Prompt Function - Encouraging Synthesis ---
+# --- Prompt Function with Numerical Citations ---
 def format_rag_prompt(
     query: str,
     context_docs: List[Document],
     chat_history: List[Dict[str, str]] = None
     ) -> str:
     """
-    Formats a direct prompt for the LLM, encouraging synthesis from context
-    and handling cases where direct examples might be definitions or pointers.
+    Formats a prompt for the LLM with retrieved context, chat history,
+    and instructions for numerical citations.
     """
 
     # --- Format Chat History ---
@@ -29,31 +29,42 @@ def format_rag_prompt(
             history_str += f"{role}: {content_preview}\n"
         history_str += "\n---\n\n"
 
-    # --- Format Context ---
+    # --- Format Context with Numerical Indexing ---
     context_str = ""
+    source_map = {} # To map number to source details for the LLM
     if not context_docs:
         logger.warning("No context documents provided for prompt formatting.")
         context_str = "CONTEXT_IS_MISSING"
     else:
         context_pieces = []
         for i, doc in enumerate(context_docs):
+            source_num = i + 1 # Start numbering from 1
             source = doc.metadata.get('source', 'Unknown Source')
-            filename = source.split('/')[-1].split('\\')[-1]
+            filename = source.split('/')[-1].split('\\')[-1] # Handle both path separators
             page = doc.metadata.get('page', 'N/A')
-            header = f"Context Chunk {i+1} (Source: {filename}, Page: {page}):"
-            content_preview = doc.page_content[:1500]
+            header = f"Context Source [{source_num}] (File: {filename}, Page: {page}):"
+            content_preview = doc.page_content[:1500] # Limit context chunk length if needed
             context_pieces.append(f"{header}\n{content_preview}")
+            # Store mapping for the LLM to use later if needed (though it should infer from header)
+            source_map[source_num] = f"{filename}, Page {page}"
+
         context_str = "\n\n---\n\n".join(context_pieces)
 
-    # --- Assemble Prompt - Modified Instructions ---
-    prompt = f"""{history_str}**Instruction:** You are an AI assistant specialized in Nutrition and Fitness. Answer the user's latest query based *only* on the provided context chunks, considering the chat history for understanding the query.
+    # --- Assemble Prompt with Numerical Citation Instructions ---
+    prompt = f"""{history_str}**Instruction:** You are an AI assistant specialized in Nutrition and Fitness. Answer the user's latest query based *only* on the provided context chunks. Consider the chat history for understanding the query if necessary.
 
--   Carefully read the provided context chunks. Synthesize the information to answer the query comprehensively.
--   If the query asks for examples and the context provides definitions or classifications (like the talk test for intensity) instead of an explicit list, **use those definitions to describe the types of activities** that would fit.
+-   Carefully read the provided context chunks, each marked with a source number like `Context Source [1]`, `Context Source [2]`, etc.
 -   Construct a comprehensive and explanatory answer to the 'Latest User Query' using *only* information found in the context chunks.
--   For *each* piece of information used from the context, cite the source document and page number in parentheses immediately after the information, like this: (Source: filename.pdf, Page X).
--   **If the context is truly insufficient to answer the query even using definitions or classifications (or if context is marked 'CONTEXT_IS_MISSING'), state *only*: "Based on the provided documents, I cannot answer this question."**
--   Do not add any information not present in the context. Do not add introductory or concluding remarks.
+-   **IMPORTANT CITATION STYLE:** When you use information from a specific context chunk, add a numerical citation marker like `[1]`, `[2]`, etc., corresponding to the source number of that chunk, immediately after the relevant sentence or phrase. You may cite multiple sources for a single statement if applicable, like `[1, 3]`.
+-   **After** providing the complete answer, add a section titled "**Sources:**" followed by a numbered list detailing the source file and page for each citation number used in your answer. For example:
+    ```
+    Sources:
+    [1] filename1.pdf, Page X
+    [2] filename2.pdf, Page Y
+    [3] some_web_url, Page Web
+    ```
+-   **If the context does not contain the information needed to answer the query (or if the context is marked 'CONTEXT_IS_MISSING'), state *only*: "Based on the provided documents, I cannot answer this question." Do *not* include a Sources section in this case.**
+-   Do not add any information not present in the context. Do not add introductory or concluding remarks not directly answering the query.
 
 ---
 **BEGIN TASK**
@@ -66,11 +77,11 @@ def format_rag_prompt(
 **Latest User Query:** {query}
 
 ---
-**Answer:**""" # <<< LLM STARTS GENERATING ANSWER HERE
+**Answer:**""" # <<< LLM STARTS GENERATING ANSWER (including citations) and then the Sources section HERE
 
     log_query = query[:50].replace('\n', ' ')
-    logger.info(f"Formatted Synthesis prompt using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
+    logger.info(f"Formatted Numerical Citation prompt using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
     return prompt
 
-# --- REMOVE extract_final_answer function ---
-# Not needed with this direct prompt structure.
+# --- REMOVE the extract_final_answer function ---
+# No longer needed as the full output (answer + sources) is desired.
