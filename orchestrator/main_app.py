@@ -12,13 +12,11 @@ from langchain_core.documents import Document
 from sentence_transformers import CrossEncoder
 
 # Import functions from other orchestrator files
-from .llm_client import stream_llm_response, get_llm_response
-# --- Use the simplified prompt formatter ---
-from .prompt_templates import format_rag_prompt # <-- Use the simplified function name
-# --- Remove extract_final_answer import ---
-# from .prompt_templates import extract_final_answer
+# Import the new query transformation function
+from .llm_client import stream_llm_response, get_llm_response, transform_query_with_history
+from .prompt_templates import format_rag_prompt # Use the simplified prompt
 
-# (Keep Load Environment Variables, Configuration, Logging Setup, Retriever Initialization, is_retriever_ready, retrieve_context_local functions as they are)
+# (Keep Load Environment Variables, Configuration, Logging Setup, Retriever Initialization, is_retriever_ready functions as they are)
 # --- Load Environment Variables ---
 load_dotenv()
 
@@ -78,7 +76,7 @@ except Exception as e:
 def is_retriever_ready() -> bool:
     return retriever_ready and vector_db is not None and cross_encoder is not None and embeddings is not None
 
-# --- Retrieval Function with Re-ranking ---
+# --- Retrieval Function with Re-ranking (Unchanged) ---
 def retrieve_context_local(query: str, initial_k: int = INITIAL_RETRIEVAL_K, final_k: int = FINAL_TOP_K) -> List[Document]:
     if not is_retriever_ready():
          logger.error("Local retriever components are not ready.")
@@ -104,22 +102,30 @@ def retrieve_context_local(query: str, initial_k: int = INITIAL_RETRIEVAL_K, fin
         logger.exception(f"Error during retrieval or re-ranking: {e}", exc_info=True)
         return []
 
-# --- Main RAG Query Function - Uses simplified prompt ---
+# --- Main RAG Query Function - ADD QUERY TRANSFORMATION STEP ---
 def query_rag_stream(
     user_query: str,
     chat_history: List[Dict[str, str]] = None
     ) -> Generator[str, None, None]:
     """
-    Performs the RAG pipeline using local re-ranked retrieval, considering chat history,
-    and streams the response from the external LLM. Yields text chunks.
+    Performs the RAG pipeline: Query Transformation -> Retrieval -> Re-ranking -> LLM Stream.
     """
-    logger.info(f"Retrieving and re-ranking context locally for query: '{user_query[:50]}...'")
-    context_docs: List[Document] = retrieve_context_local(user_query) # Uses defaults
+    # 1. Transform Query based on history (if history exists)
+    if chat_history:
+        retrieval_query = transform_query_with_history(user_query, chat_history)
+    else:
+        retrieval_query = user_query # Use original if no history
+    logger.info(f"Using query for retrieval: '{retrieval_query[:50]}...'")
+
+    # 2. Retrieve and Re-rank Context using the (potentially transformed) query
+    logger.info(f"Retrieving and re-ranking context locally for query: '{retrieval_query[:50]}...'")
+    context_docs: List[Document] = retrieve_context_local(retrieval_query) # Pass transformed query
     logger.info(f"Retrieved {len(context_docs)} re-ranked context documents locally.")
 
-    # --- Use the simplified prompt formatter ---
+    # 3. Format Prompt using the *original* user query and history
     prompt = format_rag_prompt(user_query, context_docs, chat_history)
 
+    # 4. Stream prompt to LLM
     logger.info("Streaming prompt to external LLM...")
     response_generator = stream_llm_response(prompt)
 
@@ -127,23 +133,20 @@ def query_rag_stream(
         yield "Sorry, the Language Model client is not available."
         return
 
-    # Yield the raw chunks - the LLM output should now be the direct answer
     yield from response_generator
 
 
-# --- Main Execution Block - REMOVE call to extract_final_answer ---
+# --- Main Execution Block (Unchanged - for CLI testing) ---
 if __name__ == "__main__":
     if not is_retriever_ready():
         print("\nFATAL ERROR: Failed to initialize local retrieval components.")
         sys.exit(1)
-
-    print("\nNutrition & Fitness RAG Assistant (FAISS + Re-ranking - Simplified Prompt)")
+    # (Rest of __main__ block remains the same)
+    print("\nNutrition & Fitness RAG Assistant (FAISS + Re-ranking + Query Transform)")
     print("Enter your query below. Type 'quit' to exit.")
     print("-" * 30)
-
     cli_history = []
     HISTORY_LENGTH = 3
-
     while True:
         try:
             query = input("Query: ")
@@ -160,11 +163,8 @@ if __name__ == "__main__":
                 full_response += chunk
             print("\n" + "-" * 30 + "\n")
 
-            # --- Store the RAW full_response in history ---
-            # No extraction needed anymore
             cli_history.append({"role": "user", "content": query})
-            cli_history.append({"role": "assistant", "content": full_response}) # Store raw response
-            # --- End history update ---
+            cli_history.append({"role": "assistant", "content": full_response})
 
         except EOFError: print("\nExiting."); break
         except KeyboardInterrupt: print("\nExiting."); break
