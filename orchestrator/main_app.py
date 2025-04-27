@@ -6,19 +6,18 @@ import os
 from dotenv import load_dotenv
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.vectorstores import FAISS
-from typing import Generator, List, Dict, Tuple # Import Tuple and Dict
+from typing import Generator, List, Dict, Tuple, Union # Keep Union if needed elsewhere
 from langchain_core.documents import Document
 from sentence_transformers import CrossEncoder
-import pprint # Import pprint for debug printing
+import pprint
 
 # Import functions from other orchestrator files
-# Import BOTH streaming and non-streaming LLM functions now
+# Use the reverted llm_client functions
 from .llm_client import stream_llm_response, get_llm_response, transform_query_with_history
-# Import the correct prompt formatter and the extractor (if using ReAct style still)
-# If using the final simple prompt, extractor is not needed by this file directly
-from .prompt_templates import format_rag_prompt # Use the simplified function name
-# from .prompt_templates import extract_final_answer # Only needed if using ReAct output style
+# Use the reverted prompt formatter
+from .prompt_templates import format_rag_prompt
 
+# (Keep Load Environment Variables, Configuration, Logging Setup, Retriever Initialization, is_retriever_ready, retrieve_context_local functions as they are)
 # --- Load Environment Variables ---
 load_dotenv()
 
@@ -28,7 +27,7 @@ FAISS_INDEX_NAME = "nutrition_fitness_index"
 EMBEDDING_MODEL_NAME = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 CROSS_ENCODER_MODEL_NAME = os.environ.get("CROSS_ENCODER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 INITIAL_RETRIEVAL_K = 20
-FINAL_TOP_K = 10 # Keep the increased K value
+FINAL_TOP_K = 10
 
 # Setup logging configuration
 logging.basicConfig(
@@ -77,6 +76,7 @@ def is_retriever_ready() -> bool:
 
 # --- Retrieval Function with Re-ranking (Unchanged) ---
 def retrieve_context_local(query: str, initial_k: int = INITIAL_RETRIEVAL_K, final_k: int = FINAL_TOP_K) -> List[Document]:
+    # (Keep the existing retrieve_context_local function as is)
     if not is_retriever_ready():
          logger.error("Local retriever components are not ready.")
          return []
@@ -94,14 +94,14 @@ def retrieve_context_local(query: str, initial_k: int = INITIAL_RETRIEVAL_K, fin
         logger.info(f"CrossEncoder scores calculated.")
         doc_scores = list(zip(initial_results, cross_scores))
         doc_scores.sort(key=lambda x: x[1], reverse=True)
-        reranked_docs = [doc for doc, score in doc_scores[:final_k]] # Use final_k here
+        reranked_docs = [doc for doc, score in doc_scores[:final_k]]
         logger.info(f"Returning top {len(reranked_docs)} re-ranked documents.")
         return reranked_docs
     except Exception as e:
         logger.exception(f"Error during retrieval or re-ranking: {e}", exc_info=True)
         return []
 
-# --- Main RAG Query Function for Streaming (Unchanged) ---
+# --- Main RAG Query Function for Streaming (Reverted) ---
 def query_rag_stream(
     user_query: str,
     chat_history: List[Dict[str, str]] = None
@@ -109,52 +109,53 @@ def query_rag_stream(
     """
     Performs the RAG pipeline: Query Transformation -> Retrieval -> Re-ranking -> LLM Stream.
     """
+    if not is_retriever_ready():
+        yield "[SYSTEM: Retriever not ready]"
+        return
+
+    # 1. Transform Query
     if chat_history:
         retrieval_query = transform_query_with_history(user_query, chat_history)
     else:
         retrieval_query = user_query
     logger.info(f"Using query for retrieval: '{retrieval_query[:50]}...'")
 
-    # retrieve_context_local uses FINAL_TOP_K defined above
-    context_docs: List[Document] = retrieve_context_local(retrieval_query)
+    # 2. Retrieve and Re-rank Context
+    context_docs: List[Document] = retrieve_context_local(retrieval_query) # Uses defaults
     logger.info(f"Retrieved {len(context_docs)} re-ranked context documents locally.")
 
-    # --- DEBUG Print (Keep this active for testing) ---
+    # --- DEBUG Print (Optional) ---
     # print("\n" + "="*10 + " DEBUG: Final Context Sent to LLM " + "="*10)
-    # if context_docs:
-    #     for i, doc in enumerate(context_docs):
-    #         print(f"--- Context Doc {i+1} ---")
-    #         print(f"Metadata:")
-    #         pprint.pprint(doc.metadata, indent=2)
-    #         print(f"Content Preview:\n{doc.page_content[:500]}...")
-    #         print("-" * 20)
-    # else:
-    #     print("  (No context documents were retrieved)")
+    # ... (debug print logic) ...
     # print("="*10 + " End DEBUG Context " + "="*10 + "\n")
     # --- END DEBUG ---
 
+    # 3. Format Prompt using the numerical citation version
     prompt = format_rag_prompt(user_query, context_docs, chat_history)
 
+    # 4. Stream prompt to LLM
     logger.info("Streaming prompt to external LLM...")
-    response_generator = stream_llm_response(prompt)
+    response_generator = stream_llm_response(prompt) # Use the streaming function
 
     if response_generator is None:
         yield "Sorry, the Language Model client is not available."
         return
 
+    # Yield the raw chunks - the LLM output should now be the direct answer + sources
     yield from response_generator
 
-# --- ADDED FUNCTION FOR EVALUATION ---
+
+# --- Evaluation Function (Uses non-streaming) ---
 def run_rag_for_evaluation(
     user_query: str,
-    top_k: int = FINAL_TOP_K # Use the same default K as interactive mode for consistency
+    top_k: int = FINAL_TOP_K
     ) -> Dict:
     """
     Runs the RAG pipeline for a single query and returns results for evaluation.
-    Uses non-streaming LLM call. Assumes get_llm_response exists in llm_client.
+    Uses non-streaming LLM call.
     """
     if not is_retriever_ready():
-        logger.error("[Evaluation] Retriever not ready. Cannot run evaluation.")
+        logger.error("[Evaluation] Retriever not ready.")
         return {
             "query": user_query, "retrieved_context": [], "retrieved_metadata": [],
             "generated_answer": "ERROR: Retriever not initialized.", "error": "Retriever not initialized."
@@ -168,7 +169,6 @@ def run_rag_for_evaluation(
 
     try:
         # 1. Retrieve Context (No query transform for isolated eval questions)
-        # Use the specified top_k for evaluation retrieval
         context_docs: List[Document] = retrieve_context_local(user_query, final_k=top_k)
         context_texts = [doc.page_content for doc in context_docs]
         context_metadata = [doc.metadata for doc in context_docs]
@@ -179,44 +179,41 @@ def run_rag_for_evaluation(
 
         # 3. Call LLM (Non-Streaming)
         logger.info("[Evaluation] Sending prompt to external LLM (non-streaming)...")
-        # Ensure get_llm_response is available and works
-        generated_answer = get_llm_response(prompt)
+        generated_answer = get_llm_response(prompt) # Use non-streaming version
 
         if generated_answer is None:
-            logger.error("[Evaluation] Failed to get response from LLM.")
             final_answer = "ERROR: LLM call failed."
             error_msg = "LLM call failed."
-        elif "[SYSTEM:" in generated_answer: # Check for system errors
-             logger.warning(f"[Evaluation] LLM response indicates an issue: {generated_answer}")
+        elif "[SYSTEM:" in generated_answer:
              final_answer = generated_answer
              error_msg = final_answer
         else:
-            # 4. Use the direct answer (no extraction needed with simple prompt)
+            # Use the direct answer (includes citations and Sources section)
             final_answer = generated_answer
             logger.info(f"[Evaluation] Generated answer length: {len(final_answer)}")
 
     except Exception as e:
-        logger.exception(f"[Evaluation] Unexpected error during evaluation run for query '{user_query[:50]}...': {e}", exc_info=True)
-        final_answer = f"ERROR: Unexpected error during processing - {e}"
+        logger.exception(f"[Evaluation] Unexpected error: {e}", exc_info=True)
+        final_answer = f"ERROR: Unexpected error - {e}"
         error_msg = str(e)
 
     # 5. Return results dictionary
     return {
         "query": user_query,
         "retrieved_context": context_texts,
-        "retrieved_metadata": context_metadata, # Include metadata
+        "retrieved_metadata": context_metadata,
         "generated_answer": final_answer,
-        "error": error_msg # Include error message if any occurred
+        "error": error_msg
     }
-# --- END OF ADDED FUNCTION ---
+# --- END OF EVALUATION FUNCTION ---
 
 
-# --- Main Execution Block (Unchanged - for CLI testing) ---
+# --- Main Execution Block (Reverted to use query_rag_stream) ---
 if __name__ == "__main__":
     if not is_retriever_ready():
         print("\nFATAL ERROR: Failed to initialize local retrieval components.")
         sys.exit(1)
-    # (Rest of __main__ block remains the same)
+
     print("\nNutrition & Fitness RAG Assistant (FAISS + Re-ranking + Query Transform)")
     print("Enter your query below. Type 'quit' to exit.")
     print("-" * 30)
@@ -236,7 +233,14 @@ if __name__ == "__main__":
                 print(chunk, end="", flush=True)
                 full_response += chunk
             print("\n" + "-" * 30 + "\n")
+            # Store the raw response (which includes citations and Sources)
             cli_history.append({"role": "user", "content": query})
-            cli_history.append({"role": "assistant", "content": full_response}) # Store raw response
+            cli_history.append({"role": "assistant", "content": full_response})
         except EOFError: print("\nExiting."); break
         except KeyboardInterrupt: print("\nExiting."); break
+        except Exception as e:
+            print(f"\nError: {e}")
+            logger.exception(f"Unexpected error in CLI: {e}", exc_info=True)
+            continue
+    print("Goodbye!")
+# --- END OF MAIN EXECUTION BLOCK ---

@@ -4,7 +4,7 @@ import os
 import google.generativeai as genai
 import logging
 from dotenv import load_dotenv
-from typing import Generator, Optional, List, Dict
+from typing import Generator, Optional, List, Dict # Added List, Dict
 
 # Load environment variables
 load_dotenv()
@@ -21,13 +21,14 @@ try:
     if not API_KEY:
         raise ValueError("GOOGLE_API_KEY not found in environment variables.")
     genai.configure(api_key=API_KEY)
+    # Initialize model without tools
     model = genai.GenerativeModel(MODEL_NAME)
     logger.info(f"Google AI Client configured successfully for model: {MODEL_NAME}")
 except Exception as e:
     logger.exception(f"Failed to configure Google AI Client: {e}", exc_info=True)
     # Model remains None
 
-# --- Streaming function (Unchanged) ---
+# --- Streaming function ---
 def stream_llm_response(prompt: str) -> Generator[str, None, None] | None:
     """Streams response chunks."""
     if model is None:
@@ -40,7 +41,7 @@ def stream_llm_response(prompt: str) -> Generator[str, None, None] | None:
             prompt, stream=True,
             generation_config=genai.types.GenerationConfig(temperature=0.7),
         )
-        # (Keep the rest of the streaming logic)
+        # Handle stream chunks and potential blocks
         for chunk in response_stream:
              if not chunk.parts:
                  if response_stream.prompt_feedback.block_reason:
@@ -49,17 +50,22 @@ def stream_llm_response(prompt: str) -> Generator[str, None, None] | None:
                      yield f"[SYSTEM: Response may be blocked due to: {block_reason}]"
                  else:
                      logger.warning("LLM stream returned a chunk with no parts and no block reason.")
-                 continue
-             if chunk.text: yield chunk.text
+                 continue # Skip empty/blocked chunk unless it's the final block reason
+             if chunk.text: yield chunk.text # Yield valid text
+
+        # Check for block reason after stream ends (if nothing was yielded)
         if response_stream.prompt_feedback.block_reason:
              block_reason = response_stream.prompt_feedback.block_reason
              logger.warning(f"LLM stream blocked after generation. Reason: {block_reason}")
+             # Check if anything was yielded before this block, if not, yield the reason
+             # This requires tracking if anything was yielded, simplified here
              yield f"[SYSTEM: Response blocked due to: {block_reason}]"
+
     except Exception as e:
         logger.exception(f"Error streaming from Google AI API ({MODEL_NAME}): {e}", exc_info=True)
         yield f"[SYSTEM: Error during LLM communication: {e}]"
 
-# --- Non-streaming function (Unchanged) ---
+# --- Non-streaming function ---
 def get_llm_response(prompt: str) -> str | None:
     """Gets the complete response text."""
     if model is None:
@@ -71,6 +77,7 @@ def get_llm_response(prompt: str) -> str | None:
             prompt,
             generation_config=genai.types.GenerationConfig(temperature=0.7),
         )
+        # Handle response parts and potential blocks
         if response.parts:
             result_text = response.text
             logger.info(f"Received full response from {MODEL_NAME} (length: {len(result_text)} chars).")
@@ -86,23 +93,20 @@ def get_llm_response(prompt: str) -> str | None:
         logger.exception(f"Error calling Google AI API ({MODEL_NAME}): {e}", exc_info=True)
         return None
 
-# --- Query Transformation function (REMOVED IMPORT, ADDED PROMPT STRING) ---
+# --- Query Transformation function ---
 def transform_query_with_history(original_query: str, chat_history: List[Dict[str, str]]) -> str:
     """Uses the LLM to rewrite the query based on chat history."""
     if not chat_history:
         logger.info("No chat history provided, using original query for retrieval.")
         return original_query
 
-    # --- REMOVED INCORRECT IMPORT ---
-    # from orchestrator.prompt_templates import format_query_transform_prompt # <-- REMOVED
-
-    # --- DEFINE PROMPT STRING DIRECTLY ---
+    # Define prompt string directly
     history_str = ""
     for turn in chat_history:
         role = turn.get("role", "unknown").capitalize()
         content = turn.get("content", "")
         content_preview = (content[:300] + '...') if len(content) > 300 else content
-        history_str += f"{role}: {content_preview}\n" # Use preview for transform prompt
+        history_str += f"{role}: {content_preview}\n"
 
     transform_prompt = f"""Given the following chat history and the latest user query, rewrite the latest user query to be a standalone question that incorporates the necessary context from the history. Only output the rewritten query, nothing else.
 
@@ -111,7 +115,6 @@ def transform_query_with_history(original_query: str, chat_history: List[Dict[st
 **Latest User Query:** {original_query}
 
 **Standalone Query:**"""
-    # --- END PROMPT STRING DEFINITION ---
 
     logger.info("Sending query transformation request to LLM...")
     if model is None:
@@ -119,28 +122,21 @@ def transform_query_with_history(original_query: str, chat_history: List[Dict[st
          return original_query # Fallback
 
     try:
-        response = model.generate_content(
-             transform_prompt,
-             generation_config=genai.types.GenerationConfig(temperature=0.1) # Low temp
-        )
+        # Use the non-streaming function for this short task
+        response_text = get_llm_response(transform_prompt)
 
-        if response.parts and response.text:
-            transformed_query = response.text.strip()
+        if response_text and "[SYSTEM:" not in response_text:
+            transformed_query = response_text.strip()
             if transformed_query and transformed_query != original_query:
                 logger.info(f"Transformed query: '{transformed_query}'")
                 return transformed_query
-            elif transformed_query == original_query:
-                 logger.info("Query transformation resulted in the original query.")
-                 return original_query
             else:
-                 logger.warning("Query transformation returned empty result. Using original query.")
+                 logger.info("Query transformation resulted in original or empty query.")
                  return original_query
         else:
-            logger.warning(f"Query transformation failed or returned no text. Reason: {response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'}. Using original query.")
+            logger.warning(f"Query transformation failed or returned system message: {response_text}. Using original query.")
             return original_query # Fallback
 
     except Exception as e:
         logger.exception(f"Error during query transformation LLM call: {e}", exc_info=True)
         return original_query # Fallback to original query on error
-
-# --- END OF FILE ---
