@@ -33,7 +33,7 @@ CHAT_HISTORY_LENGTH = 3
 
 # --- Page Configuration ---
 st.set_page_config(
-    page_title="NutiSmart Assistant",
+    page_title="NutriSmart Assistant",
     page_icon="🍎",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -62,7 +62,7 @@ with st.sidebar:
 
 
 # --- Main Chat Interface ---
-st.title("🍎 NutiSmart Assistant")
+st.title("🍎 NutriSmart Assistant")
 st.caption("Ask about Nutrition & Fitness - Powered by local documents & AI.")
 
 if not retriever_is_ready_flag:
