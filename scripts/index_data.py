@@ -25,8 +25,8 @@ DATA_PATH = "data" # For local PDFs
 FAISS_INDEX_PATH = "vector_store/faiss_index" # Relative to project root now
 FAISS_INDEX_NAME = "nutrition_fitness_index"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
-CHUNK_SIZE = 512
-CHUNK_OVERLAP = 75
+CHUNK_SIZE = 384
+CHUNK_OVERLAP = 50
 MIN_CHUNK_LENGTH = 50
 WEB_REQUEST_DELAY_SECONDS = 20 # Delay between loading web pages
 
