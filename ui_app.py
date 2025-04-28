@@ -4,6 +4,7 @@ import streamlit as st
 import sys
 import os
 import logging
+import re # Import regex for splitting
 from dotenv import load_dotenv # Keep load_dotenv for API key loading consistency
 from typing import List, Dict, Any # Add Any for session state flexibility
 import datetime # Import for potential file logging
@@ -86,7 +87,7 @@ with st.sidebar:
         st.error("❌ Backend Not Initialized")
         st.caption("Retriever failed to load. Check logs.")
     st.markdown("---")
-    st.caption("NutriSmart RAG v1.0 (Examples Added)") # Update version/note
+    st.caption("NutriSmart RAG v1.0 (UI Tweaks)") # Update version/note
 
 
 # --- Main Chat Interface ---
@@ -94,6 +95,7 @@ st.title("🍎 NutriSmart Assistant")
 st.caption("Ask about Nutrition & Fitness - Powered by local documents & AI.")
 
 # --- Example Questions ---
+st.markdown("---") # Add a divider
 st.markdown("##### Try asking:")
 examples = [
     "What are the benefits of protein?",
@@ -101,12 +103,11 @@ examples = [
     "Explain SMART goals for fitness.",
     "Examples of moderate-intensity activities?",
 ]
-# Use columns for a cleaner layout of example buttons
 cols = st.columns(len(examples))
 for i, example in enumerate(examples):
     with cols[i]:
-        # When button is clicked, call set_chat_input to update the state variable
         st.button(example, key=f"ex{i}", on_click=set_chat_input, args=(example,))
+st.markdown("---") # Add a divider
 
 
 # --- Initialization Check After UI Elements ---
@@ -123,58 +124,72 @@ if "messages" not in st.session_state:
     })
 if "feedback_given" not in st.session_state:
     st.session_state.feedback_given = {}
-# Initialize the chat input value in session state if it doesn't exist
 if "chat_input_value" not in st.session_state:
     st.session_state.chat_input_value = ""
 
 # --- Display Chat Messages ---
 for index, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-        # Feedback buttons logic (as before)
+        # --- MODIFICATION START: Split answer and sources ---
+        message_content = message["content"]
+        answer_part = message_content
+        sources_part = None
+        # Use regex to find the Sources section, handling potential whitespace variations
+        sources_match = re.search(r"(\n\n|^)\*\*Sources:\*\*\n", message_content, re.IGNORECASE)
+
+        if sources_match:
+            split_index = sources_match.start()
+            answer_part = message_content[:split_index].strip()
+            # Get the "**Sources:**" header and the list below it
+            sources_part = message_content[split_index:].strip()
+
+        # Display the main answer part
+        st.markdown(answer_part)
+
+        # Display the sources part in an expander if it exists
+        if sources_part:
+            with st.expander("View Sources"):
+                st.markdown(sources_part) # Display the "**Sources:**" header and list
+        # --- MODIFICATION END ---
+
+        # Feedback buttons logic - place AFTER the main answer content
         if message["role"] == "assistant" and index > 0 :
             feedback_key_base = f"feedback_{index}"
             if not st.session_state.feedback_given.get(index, False):
-                col1, col2, _ = st.columns([1, 1, 10])
+                col1, col2, _ = st.columns([1, 1, 10]) # Use smaller columns for buttons
                 with col1:
                     if st.button("👍", key=f"{feedback_key_base}_up", help="Mark response as helpful"):
                         user_query = "Unknown"
                         if index > 0 and st.session_state.messages[index-1]["role"] == "user":
                             user_query = st.session_state.messages[index-1]["content"]
-                        log_feedback(index, "👍 Positive", user_query, message["content"])
+                        # Pass the original full response to log_feedback if needed
+                        log_feedback(index, "👍 Positive", user_query, message_content)
                 with col2:
                     if st.button("👎", key=f"{feedback_key_base}_down", help="Mark response as not helpful"):
                         user_query = "Unknown"
                         if index > 0 and st.session_state.messages[index-1]["role"] == "user":
                             user_query = st.session_state.messages[index-1]["content"]
-                        log_feedback(index, "👎 Negative", user_query, message["content"])
+                        log_feedback(index, "👎 Negative", user_query, message_content)
 
 
 # --- Handle User Input ---
 # Use the value from session state, controlled by the input widget AND the example buttons
 user_prompt = st.chat_input(
     "Ask your question here...",
-    key="chat_input_widget", # Give the widget a key
-    # on_change callback can be used, but managing state directly is often simpler
+    key="chat_input_widget",
 )
 
-# Check if the input came from the text input OR if an example button set the state
 prompt_to_process = None
-if user_prompt: # Input came directly from chat_input widget
+if user_prompt:
     prompt_to_process = user_prompt
-    st.session_state.chat_input_value = "" # Clear state after processing direct input
-elif st.session_state.chat_input_value: # Input came from an example button setting the state
+    st.session_state.chat_input_value = ""
+elif st.session_state.chat_input_value:
     prompt_to_process = st.session_state.chat_input_value
-    st.session_state.chat_input_value = "" # Clear state after processing button input
+    st.session_state.chat_input_value = ""
 
 if prompt_to_process:
     logger.info(f"User input received: {prompt_to_process}")
-
-    # Add user message immediately to history
-    st.session_state.messages.append({"role": "user", "content": prompt_to_process})
-    # Mark it as needing processing (add a flag or check the last message role)
-    st.session_state.messages[-1]["needs_processing"] = True
-    # Rerun to display the user message and trigger processing logic below
+    st.session_state.messages.append({"role": "user", "content": prompt_to_process, "needs_processing": True})
     st.rerun()
 
 # --- Process the latest message if it's from the user and needs processing ---
@@ -185,7 +200,6 @@ if st.session_state.messages:
          needs_processing_flag = True
 
 if needs_processing_flag:
-    # Mark the user message as processed
     st.session_state.messages[-1]["needs_processing"] = False
     user_message_content = st.session_state.messages[-1]["content"]
 
@@ -196,7 +210,6 @@ if needs_processing_flag:
 
     logger.info(f"Sending last {len(history_to_send)} messages as history context for query: '{user_message_content[:50]}...'")
 
-    # Generate and display assistant's response using streaming
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
@@ -215,7 +228,6 @@ if needs_processing_flag:
                     for chunk in response_stream:
                         if chunk.startswith("[SYSTEM:"):
                             logger.warning(f"Received system message from stream: {chunk}")
-                            # Simplified error mapping
                             if "Retriever not ready" in chunk:
                                 full_response = "Sorry, the document retrieval system is not available right now."
                             elif "Error communicating" in chunk or "Error during LLM communication" in chunk:
@@ -241,12 +253,7 @@ if needs_processing_flag:
             message_placeholder.error(full_response)
             error_occurred = True
 
-    # Add the complete assistant response (or error message) to history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
-    # Rerun AFTER adding the assistant message to history
-    # This ensures the message loop displays the latest assistant message
-    # and its associated feedback buttons correctly.
     st.rerun()
 
 # --- End of Streamlit App ---
