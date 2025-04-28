@@ -2,6 +2,7 @@
 
 import logging
 import re
+import os # Import os for basename
 from typing import List, Dict
 from langchain_core.documents import Document
 
@@ -16,6 +17,7 @@ def format_rag_prompt(
     """
     Formats a prompt for the LLM focused on generating high-quality,
     grounded answers with a correctly formatted numerical citation list.
+    V3: Stronger emphasis on citation format.
     """
 
     # --- Format Chat History ---
@@ -32,29 +34,46 @@ def format_rag_prompt(
     # --- Format Context with Numerical Indexing AND Store Source Details ---
     context_str = ""
     # Create a mapping from source number to its details (filename, page)
-    # This map will be used to construct the final "Sources:" list instruction
     source_details_for_prompt = {}
     if not context_docs:
         logger.warning("No context documents provided for prompt formatting.")
-        context_str = "CONTEXT_IS_MISSING"
+        # Provide a clear indicator for the LLM if context is missing
+        context_str = "NO CONTEXT PROVIDED."
     else:
         context_pieces = []
+        unique_sources = {} # Track unique source/page combos to assign numbers
+        source_number_counter = 1
+        doc_to_source_num = {} # Map doc index to its assigned source number
+
         for i, doc in enumerate(context_docs):
-            source_num = i + 1 # Start numbering from 1
             source = doc.metadata.get('source', 'Unknown Source')
-            filename = source.split('/')[-1].split('\\')[-1]
+            # Handle potential path separators for different OS
+            filename = os.path.basename(source) # Get only the filename/URL end
             page = doc.metadata.get('page', 'Web')
-            header = f"Context Source [{source_num}]:" # Keep header simple for LLM
+            # Create a unique key for source file/URL and page number
+            source_key = f"{filename}::{page}"
+
+            if source_key not in unique_sources:
+                 current_source_num = source_number_counter
+                 unique_sources[source_key] = current_source_num
+                 # Store details for the final source list instruction using the assigned number
+                 source_details_for_prompt[current_source_num] = f"{filename}, Page {page}"
+                 source_number_counter += 1
+            else:
+                 current_source_num = unique_sources[source_key]
+
+            doc_to_source_num[i] = current_source_num # Store which source number this doc corresponds to
+
+            # Format the context chunk header using the assigned source number
+            header = f"Context Source [{current_source_num}]:"
             content_preview = doc.page_content[:1500] # Limit context chunk length
             context_pieces.append(f"{header}\n{content_preview}")
-            # Store details for the final source list instruction
-            source_details_for_prompt[source_num] = f"{filename}, Page {page}"
 
         context_str = "\n\n---\n\n".join(context_pieces)
 
     # --- Construct the Sources List String for the Prompt ---
     # Create the exact string we want the LLM to replicate for the sources it uses
-    sources_list_instruction = "\n".join([f"[{k}] {v}" for k, v in source_details_for_prompt.items()])
+    sources_list_instruction = "\n".join([f"[{k}] {v}" for k, v in sorted(source_details_for_prompt.items())])
 
 
     # --- Assemble Prompt with Refined Instructions ---
@@ -62,14 +81,14 @@ def format_rag_prompt(
 
 **Your Process:**
 1.  Analyze the 'Latest User Query' below, considering the 'Chat History' if present.
-2.  Carefully review *all* 'Provided Context' chunks, each marked with a `Context Source [Number]`.
+2.  Carefully review *all* 'Provided Context' chunks, each marked with a `Context Source [Number]`. Note that multiple context chunks might share the same source number if they come from the same source page.
 3.  Synthesize the relevant information *only* from these chunks to directly answer the query.
 4.  Construct your answer clearly and explanatorily.
-5.  **Citation Requirement:** For every piece of information or claim in your answer, you *must* include a numerical citation marker `[Number]` corresponding to the `Context Source` it came from. Place the marker immediately after the information it supports (e.g., "Adults need protein [1]."). If information comes from multiple sources, cite them all (e.g., "Hydration is important [2, 4].").
-6.  **Sources List Requirement:** AFTER providing the complete answer text, add a section titled exactly "**Sources:**". Under this title, create a numbered list. For *each unique citation number* you used in your answer text, list its corresponding source details on a new line. Use the EXACT format shown in the 'Available Source Details' section below. ONLY include sources you actually cited in the answer.
+5.  **CRITICAL Citation Requirement:** For *every* piece of information or claim in your answer, you **MUST** include a numerical citation marker in the format `[Number]` corresponding to the `Context Source` it came from. Place the marker immediately after the information it supports (e.g., "Adults need protein [1]."). If information comes from multiple sources, cite them all (e.g., "Hydration is important [2, 4]."). **DO NOT use any other citation format like `(Source: ...)`**.
+6.  **CRITICAL Sources List Requirement:** AFTER providing the complete answer text, add a section titled exactly `**Sources:**`. Under this title, create a numbered list. For *each unique source number* you cited in your answer text, list its corresponding source details on a new line. Use the EXACT format shown in the 'Available Source Details' section below. ONLY include sources you actually cited in the answer. Ensure the numbers in this list match the numbers used in your answer text.
 
 **Available Source Details (Use these for the Sources list):**
-{sources_list_instruction}
+{sources_list_instruction if sources_list_instruction else "No sources available."}
 
 **Example of Correct Final Output Structure:**
 ```
@@ -79,8 +98,8 @@ def format_rag_prompt(
 [1] filename1.pdf, Page X
 [2] some_web_url, Page Web
 ```
-7.  **Handling Insufficient Context:** If the provided context chunks do *not* contain the specific information needed to answer the query, respond *only* with the exact phrase: "Based on the provided documents, I cannot answer this question." Do *not* include a 'Sources:' section in this case.
-8.  **Constraints:** Do NOT include any information not explicitly found in the context. Do NOT add introductory phrases or concluding summaries.
+7.  **Handling Insufficient Context:** If the 'Provided Context' section below says "NO CONTEXT PROVIDED." or if the provided context chunks do *not* contain the specific information needed to answer the query, respond *only* with the exact phrase: `{CANNOT_ANSWER_PHRASE}` Do *not* include a 'Sources:' section in this case.
+8.  **Constraints:** Do NOT include any information not explicitly found in the context. Do NOT add introductory phrases like "Based on the context..." or concluding summaries like "In summary...". Stick strictly to the requested format. Do NOT use the `(Source: ...)` citation style.
 
 ---
 **BEGIN TASK**
@@ -96,8 +115,13 @@ def format_rag_prompt(
 **Answer:**""" # <<< LLM starts generating answer + sources here
 
     log_query = query[:50].replace('\n', ' ')
-    logger.info(f"Formatted Quality Focus prompt v2 using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
+    # Use len(context_docs) for logging consistency
+    logger.info(f"Formatted Prompt (Tuned Citations v3) using {len(context_docs)} context docs and {len(chat_history or [])} history turns for query: '{log_query}...'")
     return prompt
 
-# --- REMOVE extract_final_answer function ---
-# Still not needed as the full output (answer + sources) is desired.
+# Define the fallback phrase constant (used in prompt and evaluation script)
+CANNOT_ANSWER_PHRASE = "Based on the provided documents, I cannot answer this question."
+
+# --- REMOVED extract_final_answer function ---
+# Not needed as the full output (answer + sources) is desired.
+
