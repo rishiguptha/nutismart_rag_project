@@ -52,13 +52,16 @@ with st.sidebar:
            "role": "assistant",
            "content": "Chat history cleared. How can I help?"
         })
+        # Clear sources if they were stored (might not be needed now)
+        # if "sources_for_message" in st.session_state:
+        #     st.session_state.sources_for_message = []
         st.rerun()
     st.markdown("---")
     st.subheader("Status")
     if retriever_is_ready_flag: st.success("✅ Backend Ready")
     else: st.error("❌ Backend Not Initialized")
     st.markdown("---")
-    st.caption("NutiSmart RAG v1.0 (Citations)") # Updated version
+    st.caption("NutriSmart RAG v1.0 (Citations)") # Reverted version
 
 
 # --- Main Chat Interface ---
@@ -91,7 +94,11 @@ if user_prompt := st.chat_input("Ask your question here..."):
     with st.chat_message("user"):
         st.markdown(user_prompt)
 
-    history_to_send: List[Dict[str, str]] = st.session_state.messages[-(CHAT_HISTORY_LENGTH * 2):-1]
+    history_to_send: List[Dict[str, str]] = []
+    # Send simple role/content dicts for history
+    for msg in st.session_state.messages[-(CHAT_HISTORY_LENGTH * 2):-1]:
+         history_to_send.append({"role": msg["role"], "content": msg["content"]})
+
     logger.info(f"Sending last {len(history_to_send)} messages as history.")
 
     # Generate and display assistant's response using streaming
@@ -120,3 +127,4 @@ if user_prompt := st.chat_input("Ask your question here..."):
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     st.rerun() # Rerun to display the latest message immediately
+# --- End of Streamlit App ---

@@ -15,7 +15,7 @@ import pprint
 # Use the reverted llm_client functions
 from .llm_client import stream_llm_response, get_llm_response, transform_query_with_history
 # Use the reverted prompt formatter
-from .prompt_templates import format_rag_prompt
+from .prompt_templates import format_rag_prompt # This should be the stricter grounding one now
 
 # (Keep Load Environment Variables, Configuration, Logging Setup, Retriever Initialization, is_retriever_ready, retrieve_context_local functions as they are)
 # --- Load Environment Variables ---
@@ -145,7 +145,7 @@ def query_rag_stream(
     yield from response_generator
 
 
-# --- Evaluation Function (Uses non-streaming) ---
+# --- Evaluation Function (Reverted to use get_llm_response) ---
 def run_rag_for_evaluation(
     user_query: str,
     top_k: int = FINAL_TOP_K
@@ -191,6 +191,7 @@ def run_rag_for_evaluation(
             # Use the direct answer (includes citations and Sources section)
             final_answer = generated_answer
             logger.info(f"[Evaluation] Generated answer length: {len(final_answer)}")
+            error_msg = None # Clear error on success
 
     except Exception as e:
         logger.exception(f"[Evaluation] Unexpected error: {e}", exc_info=True)
@@ -243,4 +244,3 @@ if __name__ == "__main__":
             logger.exception(f"Unexpected error in CLI: {e}", exc_info=True)
             continue
     print("Goodbye!")
-# --- END OF MAIN EXECUTION BLOCK ---
