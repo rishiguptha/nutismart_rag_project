@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 model = None
-MODEL_NAME = os.environ.get("GENERATIVE_MODEL_NAME", "gemini-1.5-flash-latest")
+MODEL_NAME = os.environ.get("GENERATIVE_MODEL_NAME", "gemini-2.0-flash")
 
 # --- Configure the Google AI Client ---
 try:
@@ -115,11 +115,11 @@ def transform_query_with_history(original_query: str, chat_history: List[Dict[st
 
     transform_prompt = f"""Given the following chat history and the latest user query, rewrite the latest user query to be a standalone question that incorporates the necessary context from the history. Only output the rewritten query, nothing else.
 
-**Chat History:**
-{history_str}
-**Latest User Query:** {original_query}
+    **Chat History:**
+    {history_str}
+    **Latest User Query:** {original_query}
 
-**Standalone Query:**"""
+    **Standalone Query:**"""
 
     logger.info("Sending query transformation request to LLM...")
     if model is None:

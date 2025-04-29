@@ -197,7 +197,7 @@ needs_processing_flag = False
 if st.session_state.messages:
     last_message = st.session_state.messages[-1]
     if last_message["role"] == "user" and last_message.get("needs_processing", False):
-         needs_processing_flag = True
+        needs_processing_flag = True
 
 if needs_processing_flag:
     st.session_state.messages[-1]["needs_processing"] = False
