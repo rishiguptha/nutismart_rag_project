@@ -100,9 +100,10 @@ def render_sources(sources_part, source_chunks=None):
                         if page:
                             label += f" (Page {page})"
                         st.markdown(label)
-                # Show chunk content in an expander
+                # Show chunk content with a button (not an expander)
                 if chunk_content:
-                    with st.expander(f"Show content for Source {num}"):
+                    show = st.button(f"Show content for Source {num}", key=f"show_content_{num}")
+                    if show:
                         st.write(chunk_content)
         else:
             st.markdown(line)
