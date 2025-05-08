@@ -9,6 +9,7 @@ from dotenv import load_dotenv # Keep load_dotenv for API key loading consistenc
 from typing import List, Dict, Any # Add Any for session state flexibility
 import datetime # Import for potential file logging
 import json
+import streamlit.components.v1 as components
 
 # --- Improved Logging Setup ---
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -78,6 +79,8 @@ def render_sources(sources_part, source_chunks=None):
                         if str(chunk.get("number")) == num:
                             chunk_content = chunk.get("content")
                             break
+                # Display only the source number in a professional format
+                st.markdown(f"[{num}]", unsafe_allow_html=True)
                 if rest.startswith("http://") or rest.startswith("https://"):
                     st.markdown(f"[Source {num}]({rest})", unsafe_allow_html=True)
                 else:
@@ -188,31 +191,46 @@ if "chat_input_value" not in st.session_state:
 if "is_processing" not in st.session_state:
     st.session_state.is_processing = False
 
+# --- Helper function to highlight citations ---
+def highlight_citations(text):
+    # Highlight [number] citations in blue and bold
+    return re.sub(r'(\[\d+\])', r'<span style="color:#1976D2;font-weight:bold;">\1</span>', text)
 # --- Display Chat Messages ---
 for index, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
-        # --- MODIFICATION START: Split answer and sources ---
         message_content = message["content"]
         answer_part = message_content
         sources_part = None
-        # Use regex to find the Sources section, handling potential whitespace variations
         sources_match = re.search(r"(\n\n|^)\*\*Sources:\*\*\n", message_content, re.IGNORECASE)
-
         if sources_match:
             split_index = sources_match.start()
             answer_part = message_content[:split_index].strip()
-            # Get the "**Sources:**" header and the list below it
             sources_part = message_content[split_index:].strip()
-
-        # Display the main answer part
-        st.markdown(answer_part)
-
-        # Display the sources part in an expander if it exists
+        ts = message.get("timestamp")
+        if ts:
+            st.markdown(f"<span style='color:gray;font-size:0.8em;'>{ts}</span>", unsafe_allow_html=True)
+        if message["role"] == "assistant":
+            st.markdown(highlight_citations(answer_part), unsafe_allow_html=True)
+            # --- Streamlit-native Copy button ---
+            copy_btn_key = f"copy_btn_{index}"
+            if st.button("📋 Copy Answer", key=copy_btn_key):
+                st.toast("Copied to clipboard! (Use Cmd+C/Ctrl+C to copy from the highlighted text below)", icon="📋")
+                st.code(answer_part, language=None)
+            # --- Show response time if available ---
+            if message.get("response_time"):
+                st.markdown(f"<span style='color:gray;font-size:0.8em;'>⏱️ {message['response_time']} seconds</span>", unsafe_allow_html=True)
+            if index == len(st.session_state.messages) - 1:
+                if st.button("🔄 Regenerate", key="regenerate_btn"):
+                    if index > 0 and st.session_state.messages[index-1]["role"] == "user":
+                        st.session_state.messages.pop()
+                        st.session_state.messages[-1]["needs_processing"] = True
+                        st.session_state.is_processing = True
+                        st.rerun()
+        else:
+            st.markdown(answer_part)
         if sources_part:
             with st.expander("View Sources"):
                 render_sources(sources_part, message.get("source_chunks"))
-        # --- MODIFICATION END ---
-
         # Feedback buttons logic - place AFTER the main answer content
         if message["role"] == "assistant" and index > 0 :
             feedback_key_base = f"feedback_{index}"
@@ -253,7 +271,12 @@ elif st.session_state.chat_input_value:
 
 if prompt_to_process:
     st.session_state.is_processing = True
-    st.session_state.messages.append({"role": "user", "content": prompt_to_process, "needs_processing": True})
+    st.session_state.messages.append({
+        "role": "user",
+        "content": prompt_to_process,
+        "needs_processing": True,
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
     st.rerun()
 
 # --- Process the latest message if it's from the user and needs processing ---
@@ -279,6 +302,8 @@ if needs_processing_flag:
         full_response = ""
         error_occurred = False
         source_chunks = None
+        import time
+        start_time = time.time()
         try:
             with st.spinner("🔄 Retrieving context and generating answer..."):
                 progress_bar = st.progress(0, text="Generating answer...")
@@ -322,14 +347,21 @@ if needs_processing_flag:
                     if not error_occurred:
                         message_placeholder.markdown(full_response)
                         logger.info("Finished streaming response to UI.")
-
         except Exception as e:
             logger.exception(f"Error during RAG stream processing in UI: {e}", exc_info=True)
             full_response = f"Sorry, an unexpected application error occurred. Please report this issue."
             message_placeholder.error(full_response)
             error_occurred = True
+        end_time = time.time()
+        response_time = round(end_time - start_time, 2)
 
-    st.session_state.messages.append({"role": "assistant", "content": full_response, "source_chunks": source_chunks})
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": full_response,
+        "source_chunks": source_chunks,
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "response_time": response_time
+    })
     st.session_state.is_processing = False
     st.rerun()
 
