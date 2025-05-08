@@ -63,7 +63,7 @@ def set_chat_input(text):
 
 def render_sources(sources_part, source_chunks=None):
     st.markdown("**Sources:**")
-    for line in sources_part.splitlines():
+    for index, line in enumerate(sources_part.splitlines()):
         line = line.strip()
         if not line or line.lower().startswith("**sources:**"):
             continue
@@ -102,7 +102,8 @@ def render_sources(sources_part, source_chunks=None):
                         st.markdown(label)
                 # Show chunk content with a button (not an expander)
                 if chunk_content:
-                    show = st.button(f"Show content for Source {num}", key=f"show_content_{num}")
+                    unique_id = f"{num}_{filename}_{page}_{index}"
+                    show = st.button(f"Show content for Source {num}", key=f"show_content_{unique_id}")
                     if show:
                         st.write(chunk_content)
         else:
@@ -183,6 +184,10 @@ if "feedback_given" not in st.session_state:
 if "chat_input_value" not in st.session_state:
     st.session_state.chat_input_value = ""
 
+# Add a session state flag for processing
+if "is_processing" not in st.session_state:
+    st.session_state.is_processing = False
+
 # --- Display Chat Messages ---
 for index, message in enumerate(st.session_state.messages):
     with st.chat_message(message["role"]):
@@ -233,6 +238,7 @@ for index, message in enumerate(st.session_state.messages):
 user_prompt = st.chat_input(
     "Ask your question here...",
     key="chat_input_widget",
+    disabled=st.session_state.get("is_processing", False)
 )
 
 prompt_to_process = None
@@ -246,6 +252,7 @@ elif st.session_state.chat_input_value:
     logger.info(f"User input received (from example button): {prompt_to_process}")
 
 if prompt_to_process:
+    st.session_state.is_processing = True
     st.session_state.messages.append({"role": "user", "content": prompt_to_process, "needs_processing": True})
     st.rerun()
 
@@ -273,7 +280,8 @@ if needs_processing_flag:
         error_occurred = False
         source_chunks = None
         try:
-            with st.spinner("Thinking..."):
+            with st.spinner("🔄 Retrieving context and generating answer..."):
+                progress_bar = st.progress(0, text="Generating answer...")
                 logger.info("Calling backend: query_rag_stream...")
                 response_stream = query_rag_stream(user_message_content, chat_history=history_to_send)
 
@@ -283,9 +291,9 @@ if needs_processing_flag:
                     message_placeholder.error(full_response)
                     error_occurred = True
                 else:
+                    progress_val = 0
                     for chunk in response_stream:
                         if chunk.startswith("[SOURCE_CHUNKS]") and chunk.endswith("[/SOURCE_CHUNKS]"):
-                            # Parse the JSON mapping
                             try:
                                 source_chunks = json.loads(chunk[len("[SOURCE_CHUNKS]"):-len("[/SOURCE_CHUNKS]")])
                             except Exception as e:
@@ -307,6 +315,8 @@ if needs_processing_flag:
                             break
                         else:
                             full_response += chunk
+                            progress_val = min(progress_val + 5, 100)
+                            progress_bar.progress(progress_val, text="Generating answer...")
                             message_placeholder.markdown(full_response + "▌")
 
                     if not error_occurred:
@@ -320,6 +330,7 @@ if needs_processing_flag:
             error_occurred = True
 
     st.session_state.messages.append({"role": "assistant", "content": full_response, "source_chunks": source_chunks})
+    st.session_state.is_processing = False
     st.rerun()
 
 # --- End of Streamlit App ---
