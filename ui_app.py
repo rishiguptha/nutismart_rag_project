@@ -8,6 +8,7 @@ import re # Import regex for splitting
 from dotenv import load_dotenv # Keep load_dotenv for API key loading consistency
 from typing import List, Dict, Any # Add Any for session state flexibility
 import datetime # Import for potential file logging
+import json
 
 # --- Improved Logging Setup ---
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -60,6 +61,51 @@ def log_feedback(message_index: int, feedback_type: str, query: str, response: s
 def set_chat_input(text):
     st.session_state.chat_input_value = text
 
+def render_sources(sources_part, source_chunks=None):
+    st.markdown("**Sources:**")
+    for line in sources_part.splitlines():
+        line = line.strip()
+        if not line or line.lower().startswith("**sources:**"):
+            continue
+        if line.startswith("["):
+            parts = line.split("]", 1)
+            if len(parts) == 2:
+                num = parts[0][1:]
+                rest = parts[1].strip()
+                chunk_content = None
+                if source_chunks:
+                    for chunk in source_chunks:
+                        if str(chunk.get("number")) == num:
+                            chunk_content = chunk.get("content")
+                            break
+                if rest.startswith("http://") or rest.startswith("https://"):
+                    st.markdown(f"[Source {num}]({rest})", unsafe_allow_html=True)
+                else:
+                    if ", Page " in rest:
+                        filename, page = rest.split(", Page ", 1)
+                        filename = filename.strip()
+                        page = page.strip()
+                    else:
+                        filename = rest.strip()
+                        page = None
+                    file_path = os.path.join("data", filename)
+                    if os.path.isfile(file_path):
+                        with open(file_path, "rb") as f:
+                            label = f"Download {filename}"
+                            if page:
+                                label += f" (Page {page})"
+                            st.download_button(label, f, file_name=filename, key=f"download_{num}_{filename}_{page}")
+                    else:
+                        label = f"Source {num}: {filename}"
+                        if page:
+                            label += f" (Page {page})"
+                        st.markdown(label)
+                # Show chunk content in an expander
+                if chunk_content:
+                    with st.expander(f"Show content for Source {num}"):
+                        st.write(chunk_content)
+        else:
+            st.markdown(line)
 
 # --- Page Configuration (Set early) ---
 st.set_page_config(
@@ -158,7 +204,7 @@ for index, message in enumerate(st.session_state.messages):
         # Display the sources part in an expander if it exists
         if sources_part:
             with st.expander("View Sources"):
-                st.markdown(sources_part) # Display the "**Sources:**" header and list
+                render_sources(sources_part, message.get("source_chunks"))
         # --- MODIFICATION END ---
 
         # Feedback buttons logic - place AFTER the main answer content
@@ -224,6 +270,7 @@ if needs_processing_flag:
         message_placeholder = st.empty()
         full_response = ""
         error_occurred = False
+        source_chunks = None
         try:
             with st.spinner("Thinking..."):
                 logger.info("Calling backend: query_rag_stream...")
@@ -236,6 +283,14 @@ if needs_processing_flag:
                     error_occurred = True
                 else:
                     for chunk in response_stream:
+                        if chunk.startswith("[SOURCE_CHUNKS]") and chunk.endswith("[/SOURCE_CHUNKS]"):
+                            # Parse the JSON mapping
+                            try:
+                                source_chunks = json.loads(chunk[len("[SOURCE_CHUNKS]"):-len("[/SOURCE_CHUNKS]")])
+                            except Exception as e:
+                                logger.error(f"Failed to parse source_chunks: {e}")
+                                source_chunks = None
+                            continue
                         if chunk.startswith("[SYSTEM:"):
                             logger.warning(f"Received system message from stream: {chunk}")
                             if "Retriever not ready" in chunk:
@@ -263,7 +318,7 @@ if needs_processing_flag:
             message_placeholder.error(full_response)
             error_occurred = True
 
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+    st.session_state.messages.append({"role": "assistant", "content": full_response, "source_chunks": source_chunks})
     st.rerun()
 
 # --- End of Streamlit App ---

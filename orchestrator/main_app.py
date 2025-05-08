@@ -10,6 +10,7 @@ from typing import Generator, List, Dict, Tuple, Union # Keep Union if needed el
 from langchain_core.documents import Document
 from sentence_transformers import CrossEncoder
 import pprint
+import json
 
 # --- Improved Logging Setup ---
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -129,11 +130,33 @@ def query_rag_stream(
     context_docs: List[Document] = retrieve_context_local(retrieval_query) # Uses defaults
     logger.info(f"Retrieved {len(context_docs)} re-ranked context documents locally.")
 
-    # --- DEBUG Print (Optional) ---
-    # print("\n" + "="*10 + " DEBUG: Final Context Sent to LLM " + "="*10)
-    # ... (debug print logic) ...
-    # print("="*10 + " End DEBUG Context " + "="*10 + "\n")
-    # --- END DEBUG ---
+    # --- NEW: Build mapping from source number to chunk content and metadata ---
+    unique_sources = {}
+    source_number_counter = 1
+    doc_to_source_num = {}
+    source_chunks = []
+    for i, doc in enumerate(context_docs):
+        source = doc.metadata.get('source', 'Unknown Source')
+        filename = os.path.basename(source)
+        page = doc.metadata.get('page', 'Web')
+        source_key = f"{filename}::{page}"
+        if source_key not in unique_sources:
+            current_source_num = source_number_counter
+            unique_sources[source_key] = current_source_num
+            source_number_counter += 1
+        else:
+            current_source_num = unique_sources[source_key]
+        doc_to_source_num[i] = current_source_num
+        # Add to source_chunks
+        source_chunks.append({
+            "number": current_source_num,
+            "filename": filename,
+            "page": page,
+            "content": doc.page_content,
+            "url": source if source.startswith("http://") or source.startswith("https://") else None
+        })
+    # Yield the mapping as a JSON chunk at the start
+    yield f"[SOURCE_CHUNKS]{json.dumps(source_chunks)}[/SOURCE_CHUNKS]"
 
     # 3. Format Prompt using the numerical citation version
     prompt = format_rag_prompt(user_query, context_docs, chat_history)
