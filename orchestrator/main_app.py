@@ -11,6 +11,19 @@ from langchain_core.documents import Document
 from sentence_transformers import CrossEncoder
 import pprint
 
+# --- Improved Logging Setup ---
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(log_formatter)
+    logger.addHandler(ch)
+if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+    fh = logging.FileHandler('app.log', mode='a')
+    fh.setFormatter(log_formatter)
+    logger.addHandler(fh)
+
 # Import functions from other orchestrator files
 # Use the reverted llm_client functions
 from .llm_client import stream_llm_response, get_llm_response, transform_query_with_history
@@ -28,15 +41,6 @@ EMBEDDING_MODEL_NAME = os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 CROSS_ENCODER_MODEL_NAME = os.environ.get("CROSS_ENCODER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 INITIAL_RETRIEVAL_K = 20
 FINAL_TOP_K = 10
-
-# Setup logging configuration
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
-)
-logger = logging.getLogger(__name__)
-
 
 # --- Initialize Retriever Components ---
 vector_db = None
@@ -56,6 +60,7 @@ try:
     embeddings = SentenceTransformerEmbeddings(
         model_name=EMBEDDING_MODEL_NAME, model_kwargs={'device': 'cpu'}, encode_kwargs={'normalize_embeddings': True}
     )
+    logger.info(f"Embedding model '{EMBEDDING_MODEL_NAME}' initialized.")
     vector_db = FAISS.load_local(
         folder_path=abs_index_path, embeddings=embeddings, index_name=FAISS_INDEX_NAME, allow_dangerous_deserialization=True
     )

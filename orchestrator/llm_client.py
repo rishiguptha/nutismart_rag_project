@@ -6,11 +6,21 @@ import logging
 from dotenv import load_dotenv
 from typing import Generator, Optional, List, Dict
 
+# --- Improved Logging Setup ---
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    ch = logging.StreamHandler()
+    ch.setFormatter(log_formatter)
+    logger.addHandler(ch)
+if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+    fh = logging.FileHandler('app.log', mode='a')
+    fh.setFormatter(log_formatter)
+    logger.addHandler(fh)
+
 # Load environment variables
 load_dotenv()
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 model = None

@@ -27,3 +27,9 @@ wikipedia-api
 
 # For Google Search
 googlesearch-python
+
+# Evaluation
+ragas
+datasets
+evaluate
+

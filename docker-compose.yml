@@ -1,0 +1,16 @@
+services:
+  rag-app:
+    build: .
+    container_name: rag-app
+    volumes:
+      - ./data:/app/data
+      - ./vector_store:/app/vector_store
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    ports:
+      - "8401:8501"
+    working_dir: /app
+    command: streamlit run ui_app.py --server.address 0.0.0.0 --server.port 8501
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app

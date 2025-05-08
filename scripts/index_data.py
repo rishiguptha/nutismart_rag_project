@@ -5,6 +5,7 @@ import re
 import logging
 import time # Import time for delays
 import sys
+import pickle
 from langchain_community.document_loaders import PyPDFDirectoryLoader, WebBaseLoader # Add WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import SentenceTransformerEmbeddings
@@ -16,14 +17,26 @@ from langchain_community.vectorstores import FAISS
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# --- Improved Logging Setup ---
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+# Console handler
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(log_formatter)
+    logger.addHandler(ch)
+# File handler
+if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+    fh = logging.FileHandler('app.log', mode='a')
+    fh.setFormatter(log_formatter)
+    logger.addHandler(fh)
 
 # --- Configuration ---
 DATA_PATH = "data" # For local PDFs
 FAISS_INDEX_PATH = "vector_store/faiss_index" # Relative to project root now
 FAISS_INDEX_NAME = "nutrition_fitness_index"
+DOCS_PKL_NAME = "nutrition_fitness_docs.pkl"  # New separate file for documents
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 CHUNK_SIZE = 384
 CHUNK_OVERLAP = 50
@@ -149,7 +162,7 @@ def main():
     all_cleaned_docs = []
     abs_index_path = os.path.abspath(FAISS_INDEX_PATH)
 
-    # --- Optional: Delete existing index first ---
+    # --- Delete existing index directory ---
     if os.path.exists(abs_index_path):
         logger.warning(f"Existing index found at {abs_index_path}. Deleting before re-indexing.")
         import shutil
@@ -159,7 +172,6 @@ def main():
         except Exception as e:
             logger.error(f"Could not delete existing index directory: {e}. Please delete it manually.")
             return
-    # --- End Optional Delete ---
 
     # --- 1. Process Local PDFs ---
     logger.info(f"Loading local PDF documents from: {DATA_PATH}")
@@ -223,7 +235,7 @@ def main():
          logger.error(f"Failed to initialize embedding model: {e}")
          return
 
-    # --- 4. Create FAISS Index from Combined Docs and Save ---
+    # --- 4. Create FAISS Index and Save Everything ---
     try:
         logger.info(f"Creating FAISS index from {len(all_cleaned_docs)} total documents (this may take a while)...")
         vector_db = FAISS.from_documents(all_cleaned_docs, embeddings)
@@ -235,7 +247,28 @@ def main():
         logger.info(f"Saving FAISS index locally to: {abs_index_path} with index name: {FAISS_INDEX_NAME}")
         vector_db.save_local(folder_path=abs_index_path, index_name=FAISS_INDEX_NAME)
 
-        logger.info(f"FAISS index saved successfully. Index contains {vector_db.index.ntotal} vectors.")
+        # Save documents separately
+        docs_path = os.path.join(abs_index_path, DOCS_PKL_NAME)
+        logger.info(f"Saving {len(all_cleaned_docs)} documents to: {docs_path}")
+        with open(docs_path, 'wb') as f:
+            pickle.dump(all_cleaned_docs, f)
+        logger.info("Documents saved successfully.")
+
+        # Verify the saves
+        logger.info("Verifying saved files...")
+        with open(docs_path, 'rb') as f:
+            loaded_docs = pickle.load(f)
+        loaded_db = FAISS.load_local(folder_path=abs_index_path, embeddings=embeddings, index_name=FAISS_INDEX_NAME)
+        
+        logger.info(f"Verification complete:")
+        logger.info(f"  - Documents file contains {len(loaded_docs)} documents")
+        logger.info(f"  - FAISS index contains {loaded_db.index.ntotal} vectors")
+        
+        if len(loaded_docs) != loaded_db.index.ntotal:
+            logger.warning("WARNING: Number of documents does not match number of vectors!")
+        else:
+            logger.info("SUCCESS: Number of documents matches number of vectors.")
+
         logger.info("Combined Indexing process finished.")
 
     except Exception as e:

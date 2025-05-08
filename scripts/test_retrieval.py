@@ -1,18 +1,26 @@
-from langchain_community.embeddings import SentenceTransformerEmbeddings
-from langchain_community.vectorstores import FAISS # <--- Import FAISS
-import pprint
+import logging
 import os
 import sys
-import logging
+import pprint
+from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_community.vectorstores import FAISS
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# --- Improved Logging Setup ---
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(log_formatter)
+    logger.addHandler(ch)
+if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+    fh = logging.FileHandler('app.log', mode='a')
+    fh.setFormatter(log_formatter)
+    logger.addHandler(fh)
 
 # --- Configuration (Should match index_data.py) ---
-# Define folder path for FAISS index files
 FAISS_INDEX_PATH = os.path.join(os.path.dirname(__file__), '..', 'vector_store/faiss_index')
-FAISS_INDEX_NAME = "nutrition_fitness_index" # Name used during saving
+FAISS_INDEX_NAME = "nutrition_fitness_index"
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 
 def main():
@@ -23,11 +31,12 @@ def main():
     try:
         embeddings = SentenceTransformerEmbeddings(
             model_name=EMBEDDING_MODEL_NAME,
-            model_kwargs={'device': 'cpu'}, # Match indexing setting
-            encode_kwargs={'normalize_embeddings': True} # Match indexing setting
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
         )
+        logger.info(f"Embedding model '{EMBEDDING_MODEL_NAME}' initialized.")
     except Exception as e:
-        logger.error(f"Error initializing embedding model: {e}")
+        logger.error(f"Error initializing embedding model: {e}", exc_info=True)
         sys.exit(1)
 
     # --- 2. Load FAISS Index ---
@@ -37,15 +46,13 @@ def main():
 
     logger.info(f"Attempting to load FAISS index from: {abs_index_path} (Index name: {FAISS_INDEX_NAME})")
     if not os.path.exists(faiss_file) or not os.path.exists(pkl_file):
-         logger.error(f"FAISS index files (.faiss and .pkl) not found in {abs_index_path}. Did you run the indexing script successfully?")
-         sys.exit(1)
+        logger.error(f"FAISS index files (.faiss and .pkl) not found in {abs_index_path}. Did you run the indexing script successfully?")
+        sys.exit(1)
     try:
-        # FAISS requires the embedding function during load
         vector_db = FAISS.load_local(
             folder_path=abs_index_path,
             embeddings=embeddings,
             index_name=FAISS_INDEX_NAME,
-            # Allow deserialization of SentenceTransformerEmbeddings if needed
             allow_dangerous_deserialization=True
         )
         logger.info(f"FAISS index loaded successfully. Index contains {vector_db.index.ntotal} vectors.")
@@ -67,23 +74,20 @@ def main():
     for query in test_queries:
         logger.info(f"\n[QUERY]: {query}")
         try:
-            # FAISS similarity_search_with_score returns Documents and L2 distance scores
-            # Lower L2 distance means higher similarity for normalized embeddings
             results_with_scores = vector_db.similarity_search_with_score(query, k=3)
-
-            print("[RESULTS]:") # Use print for direct user output here
+            logger.info(f"Retrieved {len(results_with_scores)} results for query: '{query}'")
+            print("[RESULTS]:")
             if results_with_scores:
-                 for i, (doc, score) in enumerate(results_with_scores):
-                     print(f"  --- Result {i+1} (L2 Distance: {score:.4f}) ---") # Score is L2 distance
-                     print(f"  Metadata:")
-                     pprint.pprint(doc.metadata, indent=4)
-                     print(f"  Content: {doc.page_content[:500]}...")
+                for i, (doc, score) in enumerate(results_with_scores):
+                    print(f"  --- Result {i+1} (L2 Distance: {score:.4f}) ---")
+                    print(f"  Metadata:")
+                    pprint.pprint(doc.metadata, indent=4)
+                    print(f"  Content: {doc.page_content[:500]}...")
             else:
                 print("  No relevant documents found.")
         except Exception as e:
-             logger.exception(f"  Error during FAISS query execution for '{query[:50]}...': {e}", exc_info=True)
-             print("  Error during query execution.")
-
+            logger.exception(f"  Error during FAISS query execution for '{query[:50]}...': {e}", exc_info=True)
+            print("  Error during query execution.")
 
 if __name__ == "__main__":
     main()

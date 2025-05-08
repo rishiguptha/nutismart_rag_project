@@ -9,6 +9,19 @@ from dotenv import load_dotenv # Keep load_dotenv for API key loading consistenc
 from typing import List, Dict, Any # Add Any for session state flexibility
 import datetime # Import for potential file logging
 
+# --- Improved Logging Setup ---
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setFormatter(log_formatter)
+    logger.addHandler(ch)
+if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+    fh = logging.FileHandler('app.log', mode='a')
+    fh.setFormatter(log_formatter)
+    logger.addHandler(fh)
+
 # --- Add project root to path ---
 # Assumes ui_app.py is in the project root directory
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -21,14 +34,9 @@ if project_root not in sys.path:
 try:
     from orchestrator.main_app import is_retriever_ready, query_rag_stream
 except ImportError as e:
+    logger.error(f"Error importing orchestrator modules: {e}. Check project structure and sys.path.")
     st.error(f"Error importing orchestrator modules: {e}. Check project structure and sys.path.")
     st.stop() # Stop the app if core components can't be imported
-
-# --- Basic Logging Setup ---
-# Configure logging (optional for UI, but helpful for debugging)
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', handlers=[logging.StreamHandler(sys.stdout)])
 
 # --- Configuration ---
 # Keep loading from .env for consistency, even if config.py isn't used for this step
@@ -112,6 +120,7 @@ st.markdown("---") # Add a divider
 
 # --- Initialization Check After UI Elements ---
 if not retriever_is_ready_flag:
+    logger.error("🔴 Initialization Error: The backend components (retriever/models) failed to load. The assistant cannot function. Please check the application logs for details.")
     st.error("🔴 **Initialization Error:** The backend components (retriever/models) failed to load. The assistant cannot function. Please check the application logs for details.")
     st.stop()
 
@@ -183,12 +192,13 @@ prompt_to_process = None
 if user_prompt:
     prompt_to_process = user_prompt
     st.session_state.chat_input_value = ""
+    logger.info(f"User input received: {prompt_to_process}")
 elif st.session_state.chat_input_value:
     prompt_to_process = st.session_state.chat_input_value
     st.session_state.chat_input_value = ""
+    logger.info(f"User input received (from example button): {prompt_to_process}")
 
 if prompt_to_process:
-    logger.info(f"User input received: {prompt_to_process}")
     st.session_state.messages.append({"role": "user", "content": prompt_to_process, "needs_processing": True})
     st.rerun()
 

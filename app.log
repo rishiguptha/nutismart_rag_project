@@ -1,0 +1,609 @@
+2025-05-08 12:20:33,539 - orchestrator.main_app - INFO - Initializing retriever components locally (FAISS & CrossEncoder)...
+2025-05-08 12:20:33,540 - orchestrator.main_app - INFO - Attempting to load FAISS index from: /Users/rishiguptha/Documents/SBU/Spring'25/AMS 691 LLM/project/nutismart_rag_project/vector_store/faiss_index
+2025-05-08 12:20:34,089 - orchestrator.main_app - INFO - Embedding model 'all-MiniLM-L6-v2' initialized.
+2025-05-08 12:20:34,156 - orchestrator.main_app - INFO - FAISS index loaded. Index count: 18362
+2025-05-08 12:20:34,156 - orchestrator.main_app - INFO - Initializing CrossEncoder model: cross-encoder/ms-marco-MiniLM-L-6-v2...
+2025-05-08 12:20:34,647 - orchestrator.main_app - INFO - CrossEncoder model initialized.
+2025-05-08 12:20:35,737 - orchestrator.main_app - INFO - Using query for retrieval: 'How is body composition measured, given that I'm i...'
+2025-05-08 12:20:35,738 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How is body composition measured, given that I'm i...'
+2025-05-08 12:20:35,877 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:20:35,877 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:20:36,168 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:20:36,169 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:20:36,169 - orchestrator.main_app - INFO - Retrieved 10 re-ranked context documents locally.
+2025-05-08 12:20:36,169 - orchestrator.main_app - INFO - Streaming prompt to external LLM...
+2025-05-08 12:20:44,042 - orchestrator.main_app - INFO - Using query for retrieval: 'Explain what SMART goals are and how they can be a...'
+2025-05-08 12:20:44,043 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain what SMART goals are and how they can be a...'
+2025-05-08 12:20:44,074 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:20:44,075 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:20:44,182 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:20:44,182 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:20:44,182 - orchestrator.main_app - INFO - Retrieved 10 re-ranked context documents locally.
+2025-05-08 12:20:44,183 - orchestrator.main_app - INFO - Streaming prompt to external LLM...
+2025-05-08 12:20:49,971 - orchestrator.main_app - INFO - Using query for retrieval: 'How is body composition measured, in the context o...'
+2025-05-08 12:20:49,972 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How is body composition measured, in the context o...'
+2025-05-08 12:20:49,996 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:20:49,996 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:20:50,109 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:20:50,109 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:20:50,109 - orchestrator.main_app - INFO - Retrieved 10 re-ranked context documents locally.
+2025-05-08 12:20:50,110 - orchestrator.main_app - INFO - Streaming prompt to external LLM...
+2025-05-08 12:21:00,692 - orchestrator.main_app - INFO - Using query for retrieval: 'What are some examples of moderate-intensity activ...'
+2025-05-08 12:21:00,692 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are some examples of moderate-intensity activ...'
+2025-05-08 12:21:00,729 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:21:00,729 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:21:00,822 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:21:00,822 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:21:00,823 - orchestrator.main_app - INFO - Retrieved 10 re-ranked context documents locally.
+2025-05-08 12:21:00,824 - orchestrator.main_app - INFO - Streaming prompt to external LLM...
+2025-05-08 12:35:44,694 - orchestrator.llm_client - INFO - Google AI Client configured successfully for model: gemini-2.0-flash
+2025-05-08 12:35:44,695 - orchestrator.main_app - INFO - Initializing retriever components locally (FAISS & CrossEncoder)...
+2025-05-08 12:35:44,695 - orchestrator.main_app - INFO - Attempting to load FAISS index from: /Users/rishiguptha/Documents/SBU/Spring'25/AMS 691 LLM/project/nutismart_rag_project/vector_store/faiss_index
+2025-05-08 12:35:45,378 - orchestrator.main_app - INFO - Embedding model 'all-MiniLM-L6-v2' initialized.
+2025-05-08 12:35:45,463 - orchestrator.main_app - INFO - FAISS index loaded. Index count: 18362
+2025-05-08 12:35:45,464 - orchestrator.main_app - INFO - Initializing CrossEncoder model: cross-encoder/ms-marco-MiniLM-L-6-v2...
+2025-05-08 12:35:46,509 - orchestrator.main_app - INFO - CrossEncoder model initialized.
+2025-05-08 12:37:09,670 - __main__ - INFO - User input received (from example button): What are the benefits of protein?
+2025-05-08 12:37:09,889 - __main__ - INFO - Sending last 1 messages as history context for query: 'What are the benefits of protein?...'
+2025-05-08 12:37:09,890 - __main__ - INFO - Calling backend: query_rag_stream...
+2025-05-08 12:37:09,890 - orchestrator.llm_client - INFO - Sending query transformation request to LLM...
+2025-05-08 12:37:15,598 - orchestrator.llm_client - INFO - Transformed query: 'What are the benefits of protein for nutrition and fitness?'
+2025-05-08 12:37:15,599 - orchestrator.main_app - INFO - Using query for retrieval: 'What are the benefits of protein for nutrition and...'
+2025-05-08 12:37:15,600 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the benefits of protein for nutrition and...'
+2025-05-08 12:37:15,802 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:37:15,802 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:37:15,993 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:37:15,993 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:37:15,993 - orchestrator.main_app - INFO - Retrieved 10 re-ranked context documents locally.
+2025-05-08 12:37:15,993 - orchestrator.main_app - INFO - Streaming prompt to external LLM...
+2025-05-08 12:37:15,993 - orchestrator.llm_client - INFO - Streaming prompt to gemini-2.0-flash (length: 6717 chars)...
+2025-05-08 12:37:17,633 - __main__ - INFO - Finished streaming response to UI.
+2025-05-08 12:41:45,514 - orchestrator.llm_client - INFO - Google AI Client configured successfully for model: gemini-2.0-flash
+2025-05-08 12:41:45,515 - orchestrator.main_app - INFO - Initializing retriever components locally (FAISS & CrossEncoder)...
+2025-05-08 12:41:45,515 - orchestrator.main_app - INFO - Attempting to load FAISS index from: /Users/rishiguptha/Documents/SBU/Spring'25/AMS 691 LLM/project/nutismart_rag_project/vector_store/faiss_index
+2025-05-08 12:41:46,423 - orchestrator.main_app - INFO - Embedding model 'all-MiniLM-L6-v2' initialized.
+2025-05-08 12:41:46,575 - orchestrator.main_app - INFO - FAISS index loaded. Index count: 18362
+2025-05-08 12:41:46,575 - orchestrator.main_app - INFO - Initializing CrossEncoder model: cross-encoder/ms-marco-MiniLM-L-6-v2...
+2025-05-08 12:41:46,929 - orchestrator.main_app - INFO - CrossEncoder model initialized.
+2025-05-08 12:41:46,933 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the main recommendations for aerobic phys...' with top_k=10
+2025-05-08 12:41:46,933 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the main recommendations for aerobic phys...'
+2025-05-08 12:41:47,054 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:41:47,054 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:41:47,239 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:41:47,239 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:41:47,239 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:41:47,239 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:41:47,239 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6031 chars) for full response...
+2025-05-08 12:41:47,972 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:41:47,972 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:41:49,417 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are some specific examples of moderate-intens...' with top_k=10
+2025-05-08 12:41:49,418 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are some specific examples of moderate-intens...'
+2025-05-08 12:41:49,443 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:41:49,444 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:41:49,552 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:41:49,552 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:41:49,552 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:41:49,552 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:41:49,552 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6835 chars) for full response...
+2025-05-08 12:41:50,851 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 563 chars).
+2025-05-08 12:41:50,851 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 563
+2025-05-08 12:41:52,553 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the function of carbohydrates in the body?...' with top_k=10
+2025-05-08 12:41:52,554 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the function of carbohydrates in the body?...'
+2025-05-08 12:41:52,577 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:41:52,577 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:41:52,690 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:41:52,690 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:41:52,690 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:41:52,690 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:41:52,690 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6426 chars) for full response...
+2025-05-08 12:41:54,609 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1013 chars).
+2025-05-08 12:41:54,609 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1013
+2025-05-08 12:41:56,277 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How is body composition typically assessed?...' with top_k=10
+2025-05-08 12:41:56,277 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How is body composition typically assessed?...'
+2025-05-08 12:41:56,303 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:41:56,304 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:41:56,393 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:41:56,393 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:41:56,393 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:41:56,393 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:41:56,393 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6496 chars) for full response...
+2025-05-08 12:41:58,260 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 884 chars).
+2025-05-08 12:41:58,260 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 884
+2025-05-08 12:41:59,759 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the concept of SMART goals for fitness....' with top_k=10
+2025-05-08 12:41:59,759 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the concept of SMART goals for fitness....'
+2025-05-08 12:41:59,784 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:41:59,784 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:41:59,881 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:41:59,881 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:41:59,881 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:41:59,881 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:41:59,881 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6686 chars) for full response...
+2025-05-08 12:42:01,499 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 760 chars).
+2025-05-08 12:42:01,499 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 760
+2025-05-08 12:42:03,167 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the capital of France?...' with top_k=10
+2025-05-08 12:42:03,168 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the capital of France?...'
+2025-05-08 12:42:03,189 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:03,189 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:03,295 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:03,295 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:03,296 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:03,296 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:03,296 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6754 chars) for full response...
+2025-05-08 12:42:03,785 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:42:03,786 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:42:05,495 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Besides energy, what is another key function of fa...' with top_k=10
+2025-05-08 12:42:05,496 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Besides energy, what is another key function of fa...'
+2025-05-08 12:42:05,519 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:05,519 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:05,621 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:05,621 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:05,621 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:05,621 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:05,621 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6488 chars) for full response...
+2025-05-08 12:42:06,764 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 450 chars).
+2025-05-08 12:42:06,764 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 450
+2025-05-08 12:42:08,567 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How often should adults engage in muscle-strengthe...' with top_k=10
+2025-05-08 12:42:08,567 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How often should adults engage in muscle-strengthe...'
+2025-05-08 12:42:08,591 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:08,591 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:08,670 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:08,670 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:08,670 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:08,670 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:08,670 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6844 chars) for full response...
+2025-05-08 12:42:11,026 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1282 chars).
+2025-05-08 12:42:11,026 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1282
+2025-05-08 12:42:12,661 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Compare brisk walking and running in terms of inte...' with top_k=10
+2025-05-08 12:42:12,662 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Compare brisk walking and running in terms of inte...'
+2025-05-08 12:42:12,687 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:12,687 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:12,779 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:12,779 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:12,779 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:12,779 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:12,779 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6544 chars) for full response...
+2025-05-08 12:42:14,620 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1001 chars).
+2025-05-08 12:42:14,620 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1001
+2025-05-08 12:42:16,042 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What role does water play in regulating body tempe...' with top_k=10
+2025-05-08 12:42:16,043 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What role does water play in regulating body tempe...'
+2025-05-08 12:42:16,064 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:16,064 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:16,163 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:16,163 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:16,163 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:16,164 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:16,164 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6989 chars) for full response...
+2025-05-08 12:42:18,429 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1139 chars).
+2025-05-08 12:42:18,429 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1139
+2025-05-08 12:42:20,136 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the best exercises for managing lower bac...' with top_k=10
+2025-05-08 12:42:20,137 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the best exercises for managing lower bac...'
+2025-05-08 12:42:20,162 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:20,162 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:20,271 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:20,271 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:20,271 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:20,271 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:20,271 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6874 chars) for full response...
+2025-05-08 12:42:20,739 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:42:20,739 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:42:22,493 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'According to the documents, what is densitometry u...' with top_k=10
+2025-05-08 12:42:22,493 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'According to the documents, what is densitometry u...'
+2025-05-08 12:42:22,512 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:22,513 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:22,618 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:22,618 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:22,618 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:22,618 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:22,618 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6690 chars) for full response...
+2025-05-08 12:42:23,515 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 198 chars).
+2025-05-08 12:42:23,515 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 198
+2025-05-08 12:42:24,933 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Summarize the key differences in physical activity...' with top_k=10
+2025-05-08 12:42:24,934 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Summarize the key differences in physical activity...'
+2025-05-08 12:42:24,959 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:24,959 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:25,032 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:25,032 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:25,032 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:25,032 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:25,032 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6758 chars) for full response...
+2025-05-08 12:42:26,998 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1272 chars).
+2025-05-08 12:42:26,999 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1272
+2025-05-08 12:42:28,595 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Based on the provided guidelines, what types of ac...' with top_k=10
+2025-05-08 12:42:28,596 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Based on the provided guidelines, what types of ac...'
+2025-05-08 12:42:28,623 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:28,623 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:28,705 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:28,706 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:28,706 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:28,706 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:28,706 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6670 chars) for full response...
+2025-05-08 12:42:30,763 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1324 chars).
+2025-05-08 12:42:30,763 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1324
+2025-05-08 12:42:32,425 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the current weather in Stony Brook?...' with top_k=10
+2025-05-08 12:42:32,425 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the current weather in Stony Brook?...'
+2025-05-08 12:42:32,436 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:32,436 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:32,571 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:32,571 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:32,571 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:32,571 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:32,571 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6084 chars) for full response...
+2025-05-08 12:42:33,038 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:42:33,038 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:42:34,372 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the relationship between energy expenditur...' with top_k=10
+2025-05-08 12:42:34,372 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the relationship between energy expenditur...'
+2025-05-08 12:42:34,393 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:42:34,393 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:42:34,492 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:42:34,492 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:42:34,492 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:42:34,492 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:42:34,492 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6357 chars) for full response...
+2025-05-08 12:42:36,169 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 965 chars).
+2025-05-08 12:42:36,169 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 965
+2025-05-08 12:43:11,422 - orchestrator.llm_client - INFO - Google AI Client configured successfully for model: gemini-2.0-flash
+2025-05-08 12:43:11,422 - orchestrator.main_app - INFO - Initializing retriever components locally (FAISS & CrossEncoder)...
+2025-05-08 12:43:11,422 - orchestrator.main_app - INFO - Attempting to load FAISS index from: /Users/rishiguptha/Documents/SBU/Spring'25/AMS 691 LLM/project/nutismart_rag_project/vector_store/faiss_index
+2025-05-08 12:43:13,248 - orchestrator.main_app - INFO - Embedding model 'all-MiniLM-L6-v2' initialized.
+2025-05-08 12:43:13,396 - orchestrator.main_app - INFO - FAISS index loaded. Index count: 18362
+2025-05-08 12:43:13,396 - orchestrator.main_app - INFO - Initializing CrossEncoder model: cross-encoder/ms-marco-MiniLM-L-6-v2...
+2025-05-08 12:43:13,979 - orchestrator.main_app - INFO - CrossEncoder model initialized.
+2025-05-08 12:43:13,980 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the main recommendations for aerobic phys...' with top_k=10
+2025-05-08 12:43:13,980 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the main recommendations for aerobic phys...'
+2025-05-08 12:43:14,007 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:14,007 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:14,104 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:14,104 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:14,104 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:14,104 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:14,105 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6031 chars) for full response...
+2025-05-08 12:43:14,829 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:43:14,830 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:43:16,380 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are some specific examples of moderate-intens...' with top_k=10
+2025-05-08 12:43:16,381 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are some specific examples of moderate-intens...'
+2025-05-08 12:43:16,411 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:16,411 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:16,511 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:16,511 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:16,511 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:16,511 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:16,511 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6835 chars) for full response...
+2025-05-08 12:43:17,923 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 677 chars).
+2025-05-08 12:43:17,924 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 677
+2025-05-08 12:43:19,531 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the function of carbohydrates in the body?...' with top_k=10
+2025-05-08 12:43:19,532 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the function of carbohydrates in the body?...'
+2025-05-08 12:43:19,557 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:19,557 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:19,671 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:19,671 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:19,671 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:19,672 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:19,672 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6426 chars) for full response...
+2025-05-08 12:43:21,551 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 907 chars).
+2025-05-08 12:43:21,552 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 907
+2025-05-08 12:43:23,051 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How is body composition typically assessed?...' with top_k=10
+2025-05-08 12:43:23,052 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How is body composition typically assessed?...'
+2025-05-08 12:43:23,075 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:23,075 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:23,166 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:23,166 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:23,166 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:23,166 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:23,166 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6496 chars) for full response...
+2025-05-08 12:43:24,799 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 854 chars).
+2025-05-08 12:43:24,799 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 854
+2025-05-08 12:43:26,288 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the concept of SMART goals for fitness....' with top_k=10
+2025-05-08 12:43:26,288 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the concept of SMART goals for fitness....'
+2025-05-08 12:43:26,310 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:26,310 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:26,408 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:26,408 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:26,408 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:26,408 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:26,408 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6686 chars) for full response...
+2025-05-08 12:43:28,647 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1177 chars).
+2025-05-08 12:43:28,647 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1177
+2025-05-08 12:43:30,181 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the capital of France?...' with top_k=10
+2025-05-08 12:43:30,181 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the capital of France?...'
+2025-05-08 12:43:30,200 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:30,200 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:30,305 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:30,305 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:30,305 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:30,305 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:30,305 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6754 chars) for full response...
+2025-05-08 12:43:30,895 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:43:30,895 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:43:32,196 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Besides energy, what is another key function of fa...' with top_k=10
+2025-05-08 12:43:32,197 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Besides energy, what is another key function of fa...'
+2025-05-08 12:43:32,216 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:32,216 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:32,314 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:32,314 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:32,314 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:32,314 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:32,314 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6488 chars) for full response...
+2025-05-08 12:43:33,967 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 730 chars).
+2025-05-08 12:43:33,967 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 730
+2025-05-08 12:43:35,652 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How often should adults engage in muscle-strengthe...' with top_k=10
+2025-05-08 12:43:35,653 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How often should adults engage in muscle-strengthe...'
+2025-05-08 12:43:35,682 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:35,683 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:35,765 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:35,765 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:35,765 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:35,765 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:35,765 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6844 chars) for full response...
+2025-05-08 12:43:37,245 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 743 chars).
+2025-05-08 12:43:37,246 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 743
+2025-05-08 12:43:38,657 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Compare brisk walking and running in terms of inte...' with top_k=10
+2025-05-08 12:43:38,657 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Compare brisk walking and running in terms of inte...'
+2025-05-08 12:43:38,682 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:38,682 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:38,777 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:38,777 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:38,777 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:38,777 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:38,777 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6544 chars) for full response...
+2025-05-08 12:43:40,523 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1034 chars).
+2025-05-08 12:43:40,524 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1034
+2025-05-08 12:43:41,860 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What role does water play in regulating body tempe...' with top_k=10
+2025-05-08 12:43:41,860 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What role does water play in regulating body tempe...'
+2025-05-08 12:43:41,888 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:41,888 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:41,983 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:41,983 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:41,983 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:41,983 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:41,983 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6989 chars) for full response...
+2025-05-08 12:43:44,261 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1297 chars).
+2025-05-08 12:43:44,262 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1297
+2025-05-08 12:43:45,656 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the best exercises for managing lower bac...' with top_k=10
+2025-05-08 12:43:45,657 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the best exercises for managing lower bac...'
+2025-05-08 12:43:45,692 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:45,692 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:45,895 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:45,895 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:45,895 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:45,895 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:45,895 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6874 chars) for full response...
+2025-05-08 12:43:47,449 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 745 chars).
+2025-05-08 12:43:47,450 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 745
+2025-05-08 12:43:49,449 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'According to the documents, what is densitometry u...' with top_k=10
+2025-05-08 12:43:49,449 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'According to the documents, what is densitometry u...'
+2025-05-08 12:43:49,473 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:49,473 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:49,580 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:49,580 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:49,580 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:49,580 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:49,580 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6690 chars) for full response...
+2025-05-08 12:43:50,400 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 220 chars).
+2025-05-08 12:43:50,400 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 220
+2025-05-08 12:43:51,753 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Summarize the key differences in physical activity...' with top_k=10
+2025-05-08 12:43:51,754 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Summarize the key differences in physical activity...'
+2025-05-08 12:43:51,778 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:51,778 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:51,851 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:51,852 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:51,852 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:51,852 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:51,852 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6758 chars) for full response...
+2025-05-08 12:43:53,388 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1002 chars).
+2025-05-08 12:43:53,388 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1002
+2025-05-08 12:43:55,168 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Based on the provided guidelines, what types of ac...' with top_k=10
+2025-05-08 12:43:55,168 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Based on the provided guidelines, what types of ac...'
+2025-05-08 12:43:55,188 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:55,188 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:55,272 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:55,273 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:55,273 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:55,273 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:55,273 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6670 chars) for full response...
+2025-05-08 12:43:56,907 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 943 chars).
+2025-05-08 12:43:56,907 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 943
+2025-05-08 12:43:58,446 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the current weather in Stony Brook?...' with top_k=10
+2025-05-08 12:43:58,447 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the current weather in Stony Brook?...'
+2025-05-08 12:43:58,571 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:43:58,572 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:43:59,052 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:43:59,053 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:43:59,053 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:43:59,053 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:43:59,053 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6084 chars) for full response...
+2025-05-08 12:43:59,527 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:43:59,528 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:44:01,009 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the relationship between energy expenditur...' with top_k=10
+2025-05-08 12:44:01,010 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the relationship between energy expenditur...'
+2025-05-08 12:44:01,083 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:44:01,085 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:44:01,234 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:44:01,234 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:44:01,234 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:44:01,235 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:44:01,235 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6357 chars) for full response...
+2025-05-08 12:44:03,257 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1371 chars).
+2025-05-08 12:44:03,258 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1371
+2025-05-08 12:49:31,611 - orchestrator.llm_client - INFO - Google AI Client configured successfully for model: gemini-2.0-flash
+2025-05-08 12:49:31,612 - orchestrator.main_app - INFO - Initializing retriever components locally (FAISS & CrossEncoder)...
+2025-05-08 12:49:31,612 - orchestrator.main_app - INFO - Attempting to load FAISS index from: /Users/rishiguptha/Documents/SBU/Spring'25/AMS 691 LLM/project/nutismart_rag_project/vector_store/faiss_index
+2025-05-08 12:49:32,297 - orchestrator.main_app - INFO - Embedding model 'all-MiniLM-L6-v2' initialized.
+2025-05-08 12:49:32,566 - orchestrator.main_app - INFO - FAISS index loaded. Index count: 18362
+2025-05-08 12:49:32,566 - orchestrator.main_app - INFO - Initializing CrossEncoder model: cross-encoder/ms-marco-MiniLM-L-6-v2...
+2025-05-08 12:49:32,949 - orchestrator.main_app - INFO - CrossEncoder model initialized.
+2025-05-08 12:49:32,952 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the main recommendations for aerobic phys...' with top_k=10
+2025-05-08 12:49:32,952 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the main recommendations for aerobic phys...'
+2025-05-08 12:49:33,067 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:33,067 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:33,200 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:33,200 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:33,200 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:33,200 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:33,200 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6031 chars) for full response...
+2025-05-08 12:49:33,902 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:49:33,902 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:49:35,607 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are some specific examples of moderate-intens...' with top_k=10
+2025-05-08 12:49:35,607 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are some specific examples of moderate-intens...'
+2025-05-08 12:49:35,633 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:35,633 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:35,738 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:35,739 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:35,739 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:35,739 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:35,739 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6835 chars) for full response...
+2025-05-08 12:49:37,384 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 847 chars).
+2025-05-08 12:49:37,384 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 847
+2025-05-08 12:49:38,891 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the function of carbohydrates in the body?...' with top_k=10
+2025-05-08 12:49:38,891 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the function of carbohydrates in the body?...'
+2025-05-08 12:49:38,918 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:38,918 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:39,037 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:39,037 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:39,037 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:39,037 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:39,037 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6426 chars) for full response...
+2025-05-08 12:49:40,895 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 942 chars).
+2025-05-08 12:49:40,896 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 942
+2025-05-08 12:49:42,382 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How is body composition typically assessed?...' with top_k=10
+2025-05-08 12:49:42,383 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How is body composition typically assessed?...'
+2025-05-08 12:49:42,412 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:42,412 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:42,526 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:42,526 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:42,526 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:42,526 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:42,526 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6496 chars) for full response...
+2025-05-08 12:49:44,341 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 853 chars).
+2025-05-08 12:49:44,342 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 853
+2025-05-08 12:49:45,926 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the concept of SMART goals for fitness....' with top_k=10
+2025-05-08 12:49:45,926 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the concept of SMART goals for fitness....'
+2025-05-08 12:49:45,943 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:45,943 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:46,048 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:46,048 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:46,048 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:46,048 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:46,048 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6686 chars) for full response...
+2025-05-08 12:49:47,828 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 725 chars).
+2025-05-08 12:49:47,829 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 725
+2025-05-08 12:49:49,172 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the capital of France?...' with top_k=10
+2025-05-08 12:49:49,173 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the capital of France?...'
+2025-05-08 12:49:49,194 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:49,195 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:49,306 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:49,306 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:49,306 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:49,306 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:49,306 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6754 chars) for full response...
+2025-05-08 12:49:49,773 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:49:49,774 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:49:51,090 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Besides energy, what is another key function of fa...' with top_k=10
+2025-05-08 12:49:51,091 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Besides energy, what is another key function of fa...'
+2025-05-08 12:49:51,119 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:51,119 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:51,228 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:51,228 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:51,228 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:51,228 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:51,228 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6488 chars) for full response...
+2025-05-08 12:49:52,468 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 658 chars).
+2025-05-08 12:49:52,469 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 658
+2025-05-08 12:49:53,872 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'How often should adults engage in muscle-strengthe...' with top_k=10
+2025-05-08 12:49:53,873 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'How often should adults engage in muscle-strengthe...'
+2025-05-08 12:49:53,891 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:53,892 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:53,968 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:53,968 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:53,968 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:53,968 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:53,968 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6844 chars) for full response...
+2025-05-08 12:49:55,712 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1080 chars).
+2025-05-08 12:49:55,712 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1080
+2025-05-08 12:49:57,248 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Compare brisk walking and running in terms of inte...' with top_k=10
+2025-05-08 12:49:57,249 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Compare brisk walking and running in terms of inte...'
+2025-05-08 12:49:57,269 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:57,269 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:57,360 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:57,361 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:57,361 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:57,361 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:57,361 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6544 chars) for full response...
+2025-05-08 12:49:58,275 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 422 chars).
+2025-05-08 12:49:58,276 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 422
+2025-05-08 12:49:59,812 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What role does water play in regulating body tempe...' with top_k=10
+2025-05-08 12:49:59,812 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What role does water play in regulating body tempe...'
+2025-05-08 12:49:59,839 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:49:59,839 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:49:59,940 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:49:59,941 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:49:59,941 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:49:59,941 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:49:59,941 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6989 chars) for full response...
+2025-05-08 12:50:02,055 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1098 chars).
+2025-05-08 12:50:02,055 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1098
+2025-05-08 12:50:03,546 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What are the best exercises for managing lower bac...' with top_k=10
+2025-05-08 12:50:03,546 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What are the best exercises for managing lower bac...'
+2025-05-08 12:50:03,575 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:03,575 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:03,681 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:03,682 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:03,682 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:03,682 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:03,682 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6874 chars) for full response...
+2025-05-08 12:50:05,039 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 604 chars).
+2025-05-08 12:50:05,039 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 604
+2025-05-08 12:50:07,181 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'According to the documents, what is densitometry u...' with top_k=10
+2025-05-08 12:50:07,181 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'According to the documents, what is densitometry u...'
+2025-05-08 12:50:07,207 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:07,208 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:07,326 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:07,326 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:07,326 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:07,327 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:07,327 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6690 chars) for full response...
+2025-05-08 12:50:08,104 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 217 chars).
+2025-05-08 12:50:08,105 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 217
+2025-05-08 12:50:09,491 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Summarize the key differences in physical activity...' with top_k=10
+2025-05-08 12:50:09,492 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Summarize the key differences in physical activity...'
+2025-05-08 12:50:09,514 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:09,514 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:09,618 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:09,619 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:09,619 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:09,619 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:09,619 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6758 chars) for full response...
+2025-05-08 12:50:11,584 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1218 chars).
+2025-05-08 12:50:11,584 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1218
+2025-05-08 12:50:13,326 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Based on the provided guidelines, what types of ac...' with top_k=10
+2025-05-08 12:50:13,326 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Based on the provided guidelines, what types of ac...'
+2025-05-08 12:50:13,348 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:13,348 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:13,441 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:13,441 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:13,441 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:13,441 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:13,441 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6670 chars) for full response...
+2025-05-08 12:50:15,276 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 971 chars).
+2025-05-08 12:50:15,276 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 971
+2025-05-08 12:50:16,977 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'What is the current weather in Stony Brook?...' with top_k=10
+2025-05-08 12:50:16,978 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'What is the current weather in Stony Brook?...'
+2025-05-08 12:50:17,005 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:17,005 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:17,158 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:17,158 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:17,158 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:17,158 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:17,158 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6084 chars) for full response...
+2025-05-08 12:50:17,626 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 64 chars).
+2025-05-08 12:50:17,626 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 64
+2025-05-08 12:50:19,111 - orchestrator.main_app - INFO - [Evaluation] Processing query: 'Explain the relationship between energy expenditur...' with top_k=10
+2025-05-08 12:50:19,111 - orchestrator.main_app - INFO - Querying FAISS for initial top 20 results: 'Explain the relationship between energy expenditur...'
+2025-05-08 12:50:19,133 - orchestrator.main_app - INFO - Retrieved 20 initial Document objects.
+2025-05-08 12:50:19,133 - orchestrator.main_app - INFO - Re-ranking 20 documents...
+2025-05-08 12:50:19,236 - orchestrator.main_app - INFO - CrossEncoder scores calculated.
+2025-05-08 12:50:19,236 - orchestrator.main_app - INFO - Returning top 10 re-ranked documents.
+2025-05-08 12:50:19,236 - orchestrator.main_app - INFO - [Evaluation] Retrieved 10 context documents.
+2025-05-08 12:50:19,236 - orchestrator.main_app - INFO - [Evaluation] Sending prompt to external LLM (non-streaming)...
+2025-05-08 12:50:19,236 - orchestrator.llm_client - INFO - Sending prompt to gemini-2.0-flash (length: 6357 chars) for full response...
+2025-05-08 12:50:21,619 - orchestrator.llm_client - INFO - Received full response from gemini-2.0-flash (length: 1296 chars).
+2025-05-08 12:50:21,620 - orchestrator.main_app - INFO - [Evaluation] Generated answer length: 1296
