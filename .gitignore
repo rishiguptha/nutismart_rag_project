@@ -1,22 +1,125 @@
-# Python stuff
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-/build/
-/dist/
-*pip-wheel-metadata*/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-venv/
-*.env
-.env
-# Vector Store Data (IMPORTANT!): This directory contains embeddings or indexes used for efficient similarity searches, 
-# which are critical for the application's functionality. Exclude it to avoid committing large or sensitive data.
-vector_store/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
 
-# OS / IDE specific
-.DS_Store
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+conda-env/
+
+# IDE
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
 
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Project specific
+# Vector Store - contains embeddings and indexes
+vector_store/
+!vector_store/.gitkeep
+
+# Data directory - contains source documents
 data/
+!data/.gitkeep
+
+# Logs
+logs/
+*.log
+log/
+
+# Model files and caches
+*.bin
+*.pt
+*.pth
+*.onnx
+*.h5
+*.hdf5
+*.pkl
+*.joblib
+.cache/
+transformers_cache/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Documentation
+docs/_build/
+site/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Testing
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.tox/
+.nox/
+coverage/
+
+# Distribution
+dist/
+build/
+*.egg-info/

@@ -10,19 +10,40 @@ from typing import List, Dict, Any # Add Any for session state flexibility
 import datetime # Import for potential file logging
 import json
 import streamlit.components.v1 as components
+import uuid
 
-# --- Improved Logging Setup ---
-log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setFormatter(log_formatter)
-    logger.addHandler(ch)
-if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
-    fh = logging.FileHandler('app.log', mode='a')
-    fh.setFormatter(log_formatter)
-    logger.addHandler(fh)
+def setup_logging():
+    """Setup logging with timestamped log files in the logs directory."""
+    # Create logs directory if it doesn't exist
+    logs_dir = os.path.join(os.path.dirname(__file__), 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Create timestamped log filename
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_filename = f'nutrismart_streamlit_{timestamp}.log'
+    log_path = os.path.join(logs_dir, log_filename)
+    
+    # Setup logging
+    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    
+    # Console handler
+    if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setFormatter(log_formatter)
+        logger.addHandler(ch)
+    
+    # File handler
+    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        fh = logging.FileHandler(log_path, mode='a')
+        fh.setFormatter(log_formatter)
+        logger.addHandler(fh)
+    
+    return logger
+
+# Initialize logger
+logger = setup_logging()
 
 # --- Add project root to path ---
 # Assumes ui_app.py is in the project root directory
@@ -62,8 +83,18 @@ def log_feedback(message_index: int, feedback_type: str, query: str, response: s
 def set_chat_input(text):
     st.session_state.chat_input_value = text
 
-def render_sources(sources_part, source_chunks=None):
+# Add a session state variable for expand/collapse all sources
+if "expand_all_sources" not in st.session_state:
+    st.session_state.expand_all_sources = False
+
+def render_sources(sources_part, source_chunks=None, msg_index=0):
     st.markdown("**Sources:**")
+    # Show/Hide Details button above the list
+    if st.button(
+        "Hide Details" if st.session_state.expand_all_sources else "Show Details",
+        key=f"toggle_sources_expand_{msg_index}"
+    ):
+        st.session_state.expand_all_sources = not st.session_state.expand_all_sources
     for index, line in enumerate(sources_part.splitlines()):
         line = line.strip()
         if not line or line.lower().startswith("**sources:**"):
@@ -74,41 +105,27 @@ def render_sources(sources_part, source_chunks=None):
                 num = parts[0][1:]
                 rest = parts[1].strip()
                 chunk_content = None
+                title = None
+                snippet = None
                 if source_chunks:
                     for chunk in source_chunks:
                         if str(chunk.get("number")) == num:
                             chunk_content = chunk.get("content")
+                            title = chunk.get("title")
+                            snippet = chunk.get("snippet")
                             break
-                # Display only the source number in a professional format
-                st.markdown(f"[{num}]", unsafe_allow_html=True)
+                # Icon logic
                 if rest.startswith("http://") or rest.startswith("https://"):
-                    st.markdown(f"[Source {num}]({rest})", unsafe_allow_html=True)
+                    icon = "🔗"
                 else:
-                    if ", Page " in rest:
-                        filename, page = rest.split(", Page ", 1)
-                        filename = filename.strip()
-                        page = page.strip()
-                    else:
-                        filename = rest.strip()
-                        page = None
-                    file_path = os.path.join("data", filename)
-                    if os.path.isfile(file_path):
-                        with open(file_path, "rb") as f:
-                            label = f"Download {filename}"
-                            if page:
-                                label += f" (Page {page})"
-                            st.download_button(label, f, file_name=filename, key=f"download_{num}_{filename}_{page}")
-                    else:
-                        label = f"Source {num}: {filename}"
-                        if page:
-                            label += f" (Page {page})"
-                        st.markdown(label)
-                # Show chunk content with a button (not an expander)
-                if chunk_content:
-                    unique_id = f"{num}_{filename}_{page}_{index}"
-                    show = st.button(f"Show content for Source {num}", key=f"show_content_{unique_id}")
-                    if show:
-                        st.write(chunk_content)
+                    icon = "📄"
+                st.markdown(f"{icon} **[{num}]** {rest}", unsafe_allow_html=True)
+                if title:
+                    st.markdown(f"**Title:** {title}", unsafe_allow_html=True)
+                if snippet:
+                    st.markdown(f"<span style='color:gray;font-size:0.95em;'><i>{snippet}</i></span>", unsafe_allow_html=True)
+                if st.session_state.expand_all_sources and chunk_content:
+                    st.info(chunk_content)
         else:
             st.markdown(line)
 
@@ -126,16 +143,30 @@ retriever_is_ready_flag = is_retriever_ready()
 # --- Sidebar ---
 with st.sidebar:
     st.header("⚙️ Controls")
-    if st.button("Clear Chat History", key="clear_chat", help="Clears the current conversation history."):
-        st.session_state.messages = []
-        st.session_state.feedback_given = {}
-        st.session_state.chat_input_value = "" # Clear input field on history clear
-        logger.info("Chat history and feedback state cleared by user.")
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": "Chat history cleared. How can I help?"
-        })
-        st.rerun()
+    # Confirmation dialog for clearing chat history
+    if "confirm_clear" not in st.session_state:
+        st.session_state.confirm_clear = False
+    if st.session_state.confirm_clear:
+        st.warning("Are you sure you want to clear the chat history?")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Yes, clear", key="confirm_clear_yes"):
+                st.session_state.messages = []
+                st.session_state.feedback_given = {}
+                st.session_state.chat_input_value = ""
+                st.session_state.confirm_clear = False
+                logger.info("Chat history and feedback state cleared by user.")
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": "Chat history cleared. How can I help?"
+                })
+                st.rerun()
+        with col2:
+            if st.button("Cancel", key="confirm_clear_no"):
+                st.session_state.confirm_clear = False
+    else:
+        if st.button("Clear Chat History", key="clear_chat", help="Clears the current conversation history."):
+            st.session_state.confirm_clear = True
 
     st.markdown("---")
     st.subheader("Status")
@@ -148,6 +179,9 @@ with st.sidebar:
     st.markdown("---")
     st.caption("NutriSmart RAG v1.0 (UI Tweaks)") # Update version/note
 
+    import json
+    chat_json = json.dumps(st.session_state.get("messages", []), indent=2)
+    st.download_button("Download Chat History", chat_json, file_name="chat_history.json", mime="application/json")
 
 # --- Main Chat Interface ---
 st.title("🍎 NutriSmart Assistant")
@@ -211,11 +245,6 @@ for index, message in enumerate(st.session_state.messages):
             st.markdown(f"<span style='color:gray;font-size:0.8em;'>{ts}</span>", unsafe_allow_html=True)
         if message["role"] == "assistant":
             st.markdown(highlight_citations(answer_part), unsafe_allow_html=True)
-            # --- Streamlit-native Copy button ---
-            copy_btn_key = f"copy_btn_{index}"
-            if st.button("📋 Copy Answer", key=copy_btn_key):
-                st.toast("Copied to clipboard! (Use Cmd+C/Ctrl+C to copy from the highlighted text below)", icon="📋")
-                st.code(answer_part, language=None)
             # --- Show response time if available ---
             if message.get("response_time"):
                 st.markdown(f"<span style='color:gray;font-size:0.8em;'>⏱️ {message['response_time']} seconds</span>", unsafe_allow_html=True)
@@ -230,7 +259,8 @@ for index, message in enumerate(st.session_state.messages):
             st.markdown(answer_part)
         if sources_part:
             with st.expander("View Sources"):
-                render_sources(sources_part, message.get("source_chunks"))
+                st.session_state.current_message_index = index
+                render_sources(sources_part, message.get("source_chunks"), msg_index=index)
         # Feedback buttons logic - place AFTER the main answer content
         if message["role"] == "assistant" and index > 0 :
             feedback_key_base = f"feedback_{index}"
@@ -241,7 +271,6 @@ for index, message in enumerate(st.session_state.messages):
                         user_query = "Unknown"
                         if index > 0 and st.session_state.messages[index-1]["role"] == "user":
                             user_query = st.session_state.messages[index-1]["content"]
-                        # Pass the original full response to log_feedback if needed
                         log_feedback(index, "👍 Positive", user_query, message_content)
                 with col2:
                     if st.button("👎", key=f"{feedback_key_base}_down", help="Mark response as not helpful"):

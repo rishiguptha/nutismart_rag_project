@@ -6,6 +6,7 @@ import logging
 import time # Import time for delays
 import sys
 import pickle
+from datetime import datetime
 from langchain_community.document_loaders import PyPDFDirectoryLoader, WebBaseLoader # Add WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import SentenceTransformerEmbeddings
@@ -17,20 +18,38 @@ from langchain_community.vectorstores import FAISS
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-# --- Improved Logging Setup ---
-log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-# Console handler
-if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setFormatter(log_formatter)
-    logger.addHandler(ch)
-# File handler
-if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
-    fh = logging.FileHandler('app.log', mode='a')
-    fh.setFormatter(log_formatter)
-    logger.addHandler(fh)
+def setup_logging():
+    """Setup logging with timestamped log files in the logs directory."""
+    # Create logs directory if it doesn't exist
+    logs_dir = os.path.join(project_root, 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Create timestamped log filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_filename = f'nutrismart_{timestamp}.log'
+    log_path = os.path.join(logs_dir, log_filename)
+    
+    # Setup logging
+    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    
+    # Console handler
+    if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setFormatter(log_formatter)
+        logger.addHandler(ch)
+    
+    # File handler
+    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        fh = logging.FileHandler(log_path, mode='a')
+        fh.setFormatter(log_formatter)
+        logger.addHandler(fh)
+    
+    return logger
+
+# Initialize logger
+logger = setup_logging()
 
 # --- Configuration ---
 DATA_PATH = "data" # For local PDFs
@@ -258,7 +277,12 @@ def main():
         logger.info("Verifying saved files...")
         with open(docs_path, 'rb') as f:
             loaded_docs = pickle.load(f)
-        loaded_db = FAISS.load_local(folder_path=abs_index_path, embeddings=embeddings, index_name=FAISS_INDEX_NAME)
+        loaded_db = FAISS.load_local(
+            folder_path=abs_index_path, 
+            embeddings=embeddings, 
+            index_name=FAISS_INDEX_NAME,
+            allow_dangerous_deserialization=True
+        )
         
         logger.info(f"Verification complete:")
         logger.info(f"  - Documents file contains {len(loaded_docs)} documents")

@@ -5,19 +5,41 @@ import google.generativeai as genai
 import logging
 from dotenv import load_dotenv
 from typing import Generator, Optional, List, Dict
+import sys
+from datetime import datetime
 
-# --- Improved Logging Setup ---
-log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-    ch = logging.StreamHandler()
-    ch.setFormatter(log_formatter)
-    logger.addHandler(ch)
-if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
-    fh = logging.FileHandler('app.log', mode='a')
-    fh.setFormatter(log_formatter)
-    logger.addHandler(fh)
+def setup_logging():
+    """Setup logging with timestamped log files in the logs directory."""
+    # Create logs directory if it doesn't exist
+    logs_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    # Create timestamped log filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_filename = f'nutrismart_{timestamp}.log'
+    log_path = os.path.join(logs_dir, log_filename)
+    
+    # Setup logging
+    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    
+    # Console handler
+    if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setFormatter(log_formatter)
+        logger.addHandler(ch)
+    
+    # File handler
+    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+        fh = logging.FileHandler(log_path, mode='a')
+        fh.setFormatter(log_formatter)
+        logger.addHandler(fh)
+    
+    return logger
+
+# Initialize logger
+logger = setup_logging()
 
 # Load environment variables
 load_dotenv()

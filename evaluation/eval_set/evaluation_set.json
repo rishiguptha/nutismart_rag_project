@@ -1,0 +1,82 @@
+[
+  {
+    "id": "Q1",
+    "query": "What are the main recommendations for aerobic physical activity for adults according to the WHO guidelines?",
+    "ideal_answer": "Adults should do at least 150–300 minutes of moderate-intensity aerobic physical activity, or at least 75–150 minutes of vigorous-intensity aerobic physical activity, or an equivalent combination throughout the week. Engaging in muscle-strengthening activities involving major muscle groups on 2 or more days a week provides additional health benefits. (Verify exact wording and source/page in your docs)"
+  },
+  {
+    "id": "Q2",
+    "query": "What are some specific examples of moderate-intensity aerobic activities mentioned in the documents?",
+    "ideal_answer": "Examples mentioned might include brisk walking, water aerobics, dancing, gardening, or cycling at a moderate pace. (Verify exact examples and source/page in your docs)"
+  },
+  {
+    "id": "Q3",
+    "query": "What is the function of carbohydrates in the body?",
+    "ideal_answer": "Carbohydrates are the primary source of energy for the body, particularly for the brain and during high-intensity exercise. They are broken down into glucose, which cells use for fuel. (Verify exact wording and source/page in your docs)"
+  },
+  {
+    "id": "Q4",
+    "query": "How is body composition typically assessed?",
+    "ideal_answer": "Methods mentioned might include BMI (though limited), skinfold measurements, bioelectrical impedance analysis (BIA), underwater weighing (hydrodensitometry), or DEXA scans. (Verify exact methods and source/page in your docs)"
+  },
+  {
+      "id": "Q5",
+      "query": "Explain the concept of SMART goals for fitness.",
+      "ideal_answer": "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound. This framework helps create clear and trackable objectives for fitness plans. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q6_OOS",
+      "query": "What is the capital of France?",
+      "ideal_answer": "Based on the provided documents, I cannot answer this question."
+  },
+  {
+      "id": "Q7_Detail",
+      "query": "Besides energy, what is another key function of fats (lipids) in the body?",
+      "ideal_answer": "Fats function as structural components of cells, signaling molecules, provide insulation to vital organs, and are necessary for absorbing fat-soluble vitamins. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q8_Guideline",
+      "query": "How often should adults engage in muscle-strengthening activities according to the guidelines?",
+      "ideal_answer": "The guidelines recommend adults engage in muscle-strengthening activities involving major muscle groups on 2 or more days a week. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q9_Compare",
+      "query": "Compare brisk walking and running in terms of intensity level.",
+      "ideal_answer": "Brisk walking is typically classified as moderate-intensity, while running is classified as vigorous-intensity aerobic activity. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q10_Relationship",
+      "query": "What role does water play in regulating body temperature during exercise?",
+      "ideal_answer": "Water helps regulate body temperature through sweating and evaporation, preventing overheating during physical activity. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q11_OOS",
+      "query": "What are the best exercises for managing lower back pain?",
+      "ideal_answer": "Based on the provided documents, I cannot answer this question."
+  },
+  {
+      "id": "Q12_Definition",
+      "query": "According to the documents, what is densitometry used for?",
+      "ideal_answer": "Densitometry is used to measure an individual's body density, which is then used to help determine body composition (often body fat percentage). (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q13_Complex",
+      "query": "Summarize the key differences in physical activity recommendations for adults versus older adults.",
+      "ideal_answer": "Key differences include older adults needing multicomponent activity including balance training, determining effort relative to fitness, and potentially modifying activities based on chronic conditions, while the core aerobic/muscle-strengthening time goals are similar. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q14_Complex",
+      "query": "Based on the provided guidelines, what types of activities contribute to meeting the weekly aerobic recommendations?",
+      "ideal_answer": "Both moderate-intensity (e.g., brisk walking, swimming) and vigorous-intensity (e.g., running, jumping rope) aerobic activities, or an equivalent combination, contribute to meeting the weekly recommendations. (Verify exact wording and source/page in your docs)"
+  },
+  {
+      "id": "Q15_OOS",
+      "query": "What is the current weather in Stony Brook?",
+      "ideal_answer": "Based on the provided documents, I cannot answer this question."
+  },
+  {
+      "id": "Q16_Synthesis",
+      "query": "Explain the relationship between energy expenditure, physical activity, and weight management as described in the texts.",
+      "ideal_answer": "Physical activity increases energy expenditure above resting rate. Moderate-to-vigorous activity significantly raises expenditure, aiding weight management by creating an energy deficit when combined with appropriate energy intake. Activity also helps build lean mass, further increasing energy needs. (Verify exact wording and source/page in your docs)"
+  }
+]
