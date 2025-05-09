@@ -5,10 +5,6 @@
 [![RAG Pipeline](https://img.shields.io/badge/RAG-Pipeline-green)](https://github.com/features/actions)
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen)](https://github.com/rishiguptha/nutismart_rag_project/wiki)
 
-<div align="center">
-  <img src="docs/images/nutrismart_logo.png" alt="NutriSmart Logo" width="200"/>
-</div>
-
 ## 📝 Overview
 
 NutriSmart is an advanced Retrieval-Augmented Generation (RAG) system designed to provide accurate and context-aware answers about nutrition and fitness. It combines local document processing with Google's Gemini language model to deliver reliable information.
